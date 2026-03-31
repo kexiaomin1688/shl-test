@@ -226,7 +226,7 @@ canvas.chart { width:100%; border-radius:8px; }
 }
 </style>
 </head>
-<body>
+<body onload="initApp()">
 
 <!-- LOADING OVERLAY -->
 <div class="loading-overlay" id="loadingOverlay">
@@ -247,7 +247,7 @@ canvas.chart { width:100%; border-radius:8px; }
 </div>
 
 <!-- PAGE 1: LOGIN -->
-<div class="page" id="page-login">
+<div class="page" id="page-login" style="display:flex;align-items:center;justify-content:center">
   <div class="login-box">
     <div class="login-logo">SHL<span class="accent">.</span>TEST</div>
     <div class="login-subtitle">ENGLISH ASSESSMENT SYSTEM</div>
