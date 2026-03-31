@@ -100,7 +100,7 @@ body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui
 .home-hero { background:linear-gradient(135deg,#1b3a6b 0%,#2d5a9e 50%,#1a5c47 100%); padding:2.5rem 2rem; text-align:center; border-bottom:1px solid var(--border); color:#fff; }
 .home-hero h1 { font-size:2rem; font-weight:800; margin-bottom:.5rem; }
 .home-hero h1 .accent { color:#00a651; }
-.home-hero p { color:#3a4f6e; max-width:500px; margin:0 auto 1.5rem; }
+.home-hero p { color:rgba(255,255,255,0.82); max-width:500px; margin:0 auto 1.5rem; font-size:.95rem; }
 .home-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1rem; padding:2rem; max-width:1200px; margin:0 auto; width:100%; }
 .home-card { background:var(--card); border:1.5px solid var(--border); border-radius:var(--radius-lg); padding:1.5rem 1.4rem; cursor:pointer; transition:all .2s ease; box-shadow:var(--shadow-sm); }
 .home-card:hover { border-color:#00a651; box-shadow:var(--shadow-md); transform:translateY(-3px); }
@@ -248,9 +248,50 @@ canvas.chart { width:100%; border-radius:8px; }
 ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
 
 @media(max-width:600px) {
+  /* Layout */
   .result-grid { grid-template-columns:1fr; }
-  .home-hero h1 { font-size:1.5rem; }
-  .test-timer { font-size:1.1rem; }
+  .home-grid { grid-template-columns:repeat(2,1fr); gap:.7rem; padding:1rem; }
+  .exam-select-grid { grid-template-columns:repeat(2,1fr); }
+  /* Nav */
+  .nav { padding:0 1rem; height:52px; }
+  .nav-logo { font-size:.95rem; letter-spacing:2px; }
+  .nav-links { gap:.2rem; }
+  .nav-btn { font-size:.75rem; padding:.3rem .5rem; }
+  /* Hero */
+  .home-hero { padding:1.5rem 1rem; }
+  .home-hero h1 { font-size:1.4rem; }
+  .home-hero p { font-size:.82rem; }
+  /* Cards */
+  .home-card { padding:1rem; }
+  .home-card h3 { font-size:.85rem; }
+  .home-card-icon { font-size:1.8rem; margin-bottom:.5rem; }
+  /* Question card */
+  .question-card { padding:1.2rem; }
+  .question-text { font-size:.95rem; }
+  .option { padding:.7rem .9rem; font-size:.88rem; }
+  /* Stats chips */
+  .stat-chip { padding:.4rem .7rem; font-size:.75rem; }
+  /* Test/Exam */
+  .test-timer { font-size:1rem; }
+  .test-body { padding:1rem; }
+  /* FAB */
+  .fixed-action-bar { padding:.55rem 1rem; gap:.5rem; }
+  .fab-btn { padding:.45rem .7rem; font-size:.8rem; }
+  /* Practice */
+  .practice-body { padding:1rem; }
+  .tab-bar { gap:.15rem; }
+  .tab-item { padding:.45rem .65rem; font-size:.78rem; }
+  /* Vocab */
+  .vocab-card { padding:1.5rem 1rem; min-height:160px; }
+  .vocab-word { font-size:1.6rem; }
+  /* Login */
+  .login-box { padding:1.8rem 1.2rem; }
+  .login-logo { font-size:2.2rem; }
+}
+@media(max-width:400px) {
+  .home-grid { grid-template-columns:1fr; }
+  .exam-select-grid { grid-template-columns:1fr; }
+  .nav-btn { font-size:.7rem; padding:.25rem .4rem; }
 }
 </style>
 </head>
@@ -638,20 +679,22 @@ function generateQuestions(seed=0) {
     "Cultural diversity enriches communities by bringing together different perspectives."
   ];
   const vocabQs = [
-    {q:"What does 'elaborate' mean?",opts:["Simple","Detailed and complex","Confusing","Ordinary"],a:1},
-    {q:"Choose the synonym for 'ambiguous':",opts:["Clear","Certain","Unclear","Definite"],a:2},
-    {q:"What is the meaning of 'concise'?",opts:["Brief and clear","Lengthy","Complicated","Emotional"],a:0},
-    {q:"'Inevitable' means:",opts:["Possible","Avoidable","Uncertain","Unavoidable"],a:3},
-    {q:"The antonym of 'transparent' is:",opts:["Clear","Opaque","Bright","Open"],a:1},
-    {q:"'Pragmatic' means:",opts:["Idealistic","Practical","Theoretical","Romantic"],a:1},
-    {q:"Choose the correct meaning of 'eloquent':",opts:["Silent","Fluent and persuasive","Confused","Angry"],a:1},
-    {q:"What does 'meticulous' mean?",opts:["Careless","Very careful and precise","Fast","Loud"],a:1},
+    {q:"'Leverage' in a BD context means:",opts:["A physical tool","Use something to maximum advantage","A budget item","A report"],a:1},
+    {q:"'Conversion rate' measures:",opts:["Delivery speed","Visitors who become paying customers","Order accuracy","Rider efficiency"],a:1},
+    {q:"'Scalable' means a solution:",opts:["Only works at small scale","Can grow without losing performance","Is expensive","Is manual"],a:1},
+    {q:"To 'benchmark' against a competitor means to:",opts:["Copy them","Compare your performance against theirs","Surpass them","Ignore them"],a:1},
+    {q:"'Incremental revenue' refers to:",opts:["Fixed income","Additional revenue on top of existing income","One-time payment","Total annual revenue"],a:1},
+    {q:"'Retention' in platform operations means:",opts:["Hiring new users","Keeping existing users active","Delivery accuracy","Marketing spend"],a:1},
+    {q:"'Mitigate the risk' means to:",opts:["Ignore it","Make it less severe","Accept it fully","Escalate immediately"],a:1},
+    {q:"'Facilitate a meeting' means to:",opts:["Cancel it","Attend it","Help it run smoothly","Record the minutes"],a:2},
   ];
   const situationQs = [
-    {q:"You are in a business meeting and your colleague presents an incorrect figure. What do you say?",opts:["Nothing, it's not your problem","Excuse me, I think there might be a slight discrepancy in that figure","You're completely wrong!","Leave the room immediately"],a:1},
-    {q:"A customer is upset about a delayed order. The best response is:",opts:["Tell them it's their fault","Apologize and offer a solution","Ignore their complaint","Transfer them repeatedly"],a:1},
-    {q:"You need to decline a meeting invitation politely. Which is appropriate?",opts:["Just don't show up","I'm afraid I have a prior commitment at that time. Could we reschedule?","No.","Why do you keep scheduling meetings?"],a:1},
-    {q:"In a presentation, you lose your train of thought. What do you say?",opts:["Panic and leave","Let me just take a moment to gather my thoughts","Nothing, just stand there","Blame the audience"],a:1},
+    {q:"A restaurant partner says your commission rate is too high. How do you respond?",opts:["Tell them to accept it or leave","Acknowledge their concern and reframe around the incremental revenue the platform generates","Immediately offer a discount","End the call"],a:1,explanation:"Effective BD acknowledges concerns and reframes around value (incremental revenue) rather than defending cost."},
+    {q:"Your BDM misses the weekly sign-up target by 30%. You are their manager. What is the most effective first step?",opts:["Report them to HR","Have a private conversation to understand the root cause before proposing solutions","Publicly announce the miss in the team meeting","Immediately reassign their territory"],a:1,explanation:"Good management starts with understanding the root cause privately before deciding action."},
+    {q:"During a partner onboarding call in English, you don't understand a word the partner used. What do you do?",opts:["Pretend you understood and continue","Politely say: 'Could you clarify what you mean by that?'","End the call and send an email instead","Ask a colleague to take over"],a:1,explanation:"Asking for clarification is professional and prevents misunderstandings in cross-language communication."},
+    {q:"You are presenting Q1 results and a senior leader asks a question you cannot answer. Best response?",opts:["Make up an answer","Say 'I don't know' and change the topic","Acknowledge you don't have the data at hand and commit to following up with a specific timeline","Blame the data team"],a:2,explanation:"Admitting knowledge gaps with a clear follow-up commitment maintains credibility."},
+    {q:"A restaurant partner emails you in English asking about payment terms. Your response should:",opts:["Reply in Chinese only","Reply in English, confirm the terms clearly, and offer to answer further questions","Forward to a colleague without replying","Wait until the next quarterly review"],a:1,explanation:"Prompt, clear English responses to partner queries build trust and demonstrate professionalism."},
+    {q:"In a cross-functional meeting, a colleague from another team proposes a solution that conflicts with your BD data. You should:",opts:["Stay silent to avoid conflict","Interrupt and dismiss their idea","Politely share your data: 'Our field data suggests a different picture — could we align on this?'","Agree publicly then complain privately"],a:2,explanation:"Sharing data constructively promotes alignment while maintaining professional relationships."},
   ];
   const listeningQs = [
     {q:"[Listen] The speaker is mainly talking about:",speech:"The impact of social media on modern communication patterns has been profound and far-reaching.",opts:["Weather patterns","Social media's effect on communication","Economic policies","Historical events"],a:1},
@@ -660,37 +703,38 @@ function generateQuestions(seed=0) {
     {q:"[Listen] According to the speaker:",speech:"Critical thinking and problem-solving skills are increasingly valued in today's job market.",opts:["Technical skills only matter","Critical thinking is valued","Grades are everything","Language is unimportant"],a:1},
   ];
 
-  // Extended vocabulary question bank (20 questions)
+  // Extended vocabulary question bank — Business English / Food Delivery / Internet
   const vocabQsAll = [
-    {q:"What does 'elaborate' mean?",opts:["Simple","Detailed and complex","Confusing","Ordinary"],a:1,explanation:"'Elaborate' means detailed and complex."},
-    {q:"Choose the synonym for 'ambiguous':",opts:["Clear","Certain","Unclear","Definite"],a:2,explanation:"'Ambiguous' means unclear or having more than one meaning."},
-    {q:"What is the meaning of 'concise'?",opts:["Brief and clear","Lengthy","Complicated","Emotional"],a:0,explanation:"'Concise' means giving a lot of information in few words."},
-    {q:"'Inevitable' means:",opts:["Possible","Avoidable","Uncertain","Unavoidable"],a:3,explanation:"'Inevitable' means certain to happen, unavoidable."},
-    {q:"The antonym of 'transparent' is:",opts:["Clear","Opaque","Bright","Open"],a:1,explanation:"'Opaque' is the opposite — not able to be seen through."},
-    {q:"'Pragmatic' means:",opts:["Idealistic","Practical","Theoretical","Romantic"],a:1,explanation:"'Pragmatic' means dealing with things sensibly and practically."},
-    {q:"Choose the correct meaning of 'eloquent':",opts:["Silent","Fluent and persuasive","Confused","Angry"],a:1,explanation:"'Eloquent' means well-spoken and persuasive."},
-    {q:"What does 'meticulous' mean?",opts:["Careless","Very careful and precise","Fast","Loud"],a:1,explanation:"'Meticulous' means showing great attention to detail."},
-    {q:"'Scrutinise' means to:",opts:["Ignore","Examine carefully","Guess","Approve quickly"],a:1,explanation:"To scrutinise is to examine or inspect closely."},
-    {q:"The word 'lucrative' means:",opts:["Expensive","Profitable","Dangerous","Creative"],a:1,explanation:"'Lucrative' means producing a great deal of profit."},
-    {q:"'Tenacious' most closely means:",opts:["Weak","Stubborn","Persistent and determined","Flexible"],a:2,explanation:"'Tenacious' means holding firmly to a position or persisting."},
-    {q:"What does 'mitigate' mean?",opts:["Worsen","Lessen or reduce","Ignore","Create"],a:1,explanation:"To mitigate means to make something less severe or harmful."},
-    {q:"'Redundant' in a workplace context means:",opts:["Essential","No longer needed","Overworked","Promoted"],a:1,explanation:"Redundant means no longer needed or superfluous."},
-    {q:"What does 'consensus' mean?",opts:["Disagreement","General agreement","A formal vote","A contract"],a:1,explanation:"Consensus is a general agreement among a group."},
-    {q:"'Delegate' as a verb means to:",opts:["Do everything yourself","Assign a task to someone else","Cancel a meeting","Promote"],a:1,explanation:"To delegate means to entrust a task to another person."},
-    {q:"What is the meaning of 'benchmark'?",opts:["A physical mark on a desk","A standard point of reference for comparison","An outdated method","A type of test"],a:1,explanation:"A benchmark is a standard or point of reference against which things are measured."},
-    {q:"'Procrastinate' means to:",opts:["Work ahead of schedule","Delay or put off doing something","Plan carefully","Multitask"],a:1,explanation:"To procrastinate is to delay or postpone action."},
-    {q:"'Leverage' in business means:",opts:["A physical tool","Use something to maximum advantage","A financial loss","A type of meeting"],a:1,explanation:"To leverage means to use something to maximum advantage."},
-    {q:"What does 'facilitate' mean?",opts:["Obstruct","Make easier or help bring about","Take over","Evaluate"],a:1,explanation:"To facilitate means to make a process easier or help it happen."},
-    {q:"'Viable' means:",opts:["Impossible","Risky","Capable of working successfully","Expensive"],a:2,explanation:"Viable means capable of working successfully; feasible."},
+    // Core business terms
+    {q:"In a BD meeting, a colleague says 'we need to leverage our existing network.' What does 'leverage' mean here?",opts:["Ignore","Use to maximum advantage","Report to management","Reduce"],a:1,explanation:"To leverage means to use something to maximum advantage — here, using existing contacts."},
+    {q:"'Our conversion rate dropped by 5%.' What does conversion rate measure?",opts:["Delivery speed","The proportion of visitors who become paying customers","Revenue per order","Number of restaurants"],a:1,explanation:"Conversion rate = the % of users who complete a desired action (e.g. placing an order)."},
+    {q:"'The new rider incentive programme improved retention.' What does retention mean?",opts:["Hiring new riders","Keeping existing riders active on the platform","Training speed","Delivery accuracy"],a:1,explanation:"Retention = the ability to keep users/partners continuing to use or work with the platform."},
+    {q:"A manager says the solution must be 'scalable'. This means:",opts:["It works only in small teams","It can grow without losing performance","It is expensive to build","It has been tested abroad"],a:1,explanation:"Scalable = can grow in size or volume without performance degrading."},
+    {q:"'We need to prioritise accounts with the highest GMV potential.' GMV stands for:",opts:["General Monthly Volume","Gross Merchandise Value","Global Market Validation","Growth Metric Value"],a:1,explanation:"GMV (Gross Merchandise Value) is the total value of merchandise sold through the platform."},
+    {q:"A restaurant partner is worried about commission. You reframe it around 'incremental revenue'. What does incremental mean?",opts:["One-time","Gradual additional increase","Guaranteed","Fixed"],a:1,explanation:"Incremental = additional growth coming on top of what already exists — extra orders from the platform."},
+    {q:"'We need to benchmark our delivery time against competitors.' To benchmark means to:",opts:["Copy a competitor","Set a standard point of comparison","Exceed all targets","Reduce costs"],a:1,explanation:"To benchmark is to measure your performance against a standard or competitor reference."},
+    {q:"'The logistics system must handle peak-hour demand fluctuation.' Fluctuation means:",opts:["Steady growth","Irregular changes in level","Permanent decline","Technical failure"],a:1,explanation:"Fluctuation = irregular rises and falls in a quantity — here, order volume varying by hour."},
+    {q:"Your manager asks you to 'mitigate the risk' of low partner retention. Mitigate means to:",opts:["Eliminate completely","Make less severe","Ignore temporarily","Document formally"],a:1,explanation:"To mitigate = to reduce the severity or impact of something negative."},
+    {q:"In a stakeholder meeting, you want to 'align all parties.' Align in this context means:",opts:["Disagree formally","Bring into agreement or coordination","Send a report","Schedule a follow-up"],a:1,explanation:"To align stakeholders = to ensure everyone shares the same goals, understanding, or approach."},
+    {q:"A BD rep is described as 'accountable for 20 sign-ups per week.' Accountable means:",opts:["Able to count numbers","Responsible and answerable for results","Exempt from review","A senior manager"],a:1,explanation:"Accountable = responsible to others for your decisions and outcomes."},
+    {q:"'We need a more viable approach to onboarding SMB partners.' Viable means:",opts:["Expensive","Complicated","Capable of working successfully","Already tested"],a:2,explanation:"Viable = capable of working successfully; feasible in practice."},
+    {q:"'The proposal was concise and well-structured.' Concise means:",opts:["Lengthy and detailed","Brief and clearly expressed","Formal and official","Creative and original"],a:1,explanation:"Concise = expressing much in few words, without unnecessary detail."},
+    {q:"'The manager delegated the follow-up calls to the BD team.' Delegate means:",opts:["Cancel","Assign a task to someone else","Do personally","Review later"],a:1,explanation:"To delegate = to entrust a task or responsibility to another person."},
+    {q:"A colleague says the report was 'transparent'. In this context, transparent means:",opts:["Invisible","Printed clearly","Open and honest, not concealing anything","Colourful"],a:2,explanation:"Transparent = open, honest, and not concealing information — a key value in business reporting."},
+    {q:"'Facilitate' the onboarding meeting means:",opts:["Cancel","Record the minutes","Make it easier and help it run smoothly","Translate the content"],a:2,explanation:"To facilitate = to make a process easier or help it happen effectively."},
+    {q:"'The team showed great persistence despite setbacks.' Persistence most closely means:",opts:["Speed","Talent","Continuing firmly despite difficulty","Creativity"],a:2,explanation:"Persistence = continuing firmly in a course of action despite difficulty or opposition."},
+    {q:"A restaurant is described as a 'lucrative partner'. This means the restaurant is:",opts:["Difficult to manage","Very profitable","Located far away","New to the platform"],a:1,explanation:"Lucrative = producing a great deal of money or profit."},
+    {q:"You need to 'elaborate on your Q1 performance.' Elaborate means:",opts:["Summarise briefly","Provide more detail","Repeat the same point","Change the topic"],a:1,explanation:"To elaborate = to add more detail or develop a point further."},
+    {q:"'Procurement of delivery equipment requires three vendor quotes.' Procurement means:",opts:["Disposal","The process of obtaining goods or services","Training","Quality check"],a:1,explanation:"Procurement = the process of obtaining/buying goods or services for an organisation."},
   ];
 
-  // Extended reading comprehension passages (for E dim)
+  // Extended reading comprehension passages — Business / Food Delivery / Internet focused
   const readingCompQs = [
-    {passage:"Studies show that companies with diverse leadership teams outperform their peers by 35%. Diversity encompasses gender, ethnicity, background and experience. Critics argue that diversity initiatives can lead to tokenism if not implemented thoughtfully.",q:"According to the passage, diverse leadership teams:",opts:["Always underperform","Outperform peers by 35%","Have no effect on performance","Perform worse in some sectors"],a:1,explanation:"The passage states diverse teams outperform peers by 35%."},
-    {passage:"Studies show that companies with diverse leadership teams outperform their peers by 35%. Diversity encompasses gender, ethnicity, background and experience. Critics argue that diversity initiatives can lead to tokenism if not implemented thoughtfully.",q:"Critics of diversity initiatives are concerned about:",opts:["Performance drops","Tokenism if not thoughtfully implemented","Increased costs","Lack of metrics"],a:1,explanation:"The passage explicitly mentions critics' concern about tokenism."},
-    {passage:"Automation is reshaping the global labour market. Routine tasks are increasingly performed by machines, raising concerns about job displacement. However, economists note that past technological revolutions created more jobs than they destroyed. Reskilling programmes are seen as critical for managing the transition.",q:"Economists suggest that past technological revolutions:",opts:["Permanently reduced employment","Created more jobs than they destroyed","Had no effect on employment","Only benefited skilled workers"],a:1,explanation:"Economists noted past revolutions created more jobs than destroyed."},
-    {passage:"Automation is reshaping the global labour market. Routine tasks are increasingly performed by machines, raising concerns about job displacement. However, economists note that past technological revolutions created more jobs than they destroyed. Reskilling programmes are seen as critical for managing the transition.",q:"What is described as critical for managing the automation transition?",opts:["Banning automation","Reskilling programmes","Shorter working hours","Higher minimum wages"],a:1,explanation:"The passage identifies reskilling programmes as critical."},
-    {passage:"The circular economy aims to eliminate waste by keeping materials in use as long as possible. Unlike the traditional linear model of take-make-dispose, it emphasises repair, reuse, and recycling. Several major corporations have pledged to adopt circular principles by 2030.",q:"The circular economy differs from the traditional model by:",opts:["Producing more waste","Emphasising repair, reuse and recycling","Focusing only on recycling","Eliminating all manufacturing"],a:1,explanation:"The circular economy emphasises repair, reuse and recycling vs the linear take-make-dispose."},
+    {passage:"Last-mile delivery accounts for over 50% of total logistics costs in e-commerce. For food delivery platforms, the challenge is even more acute: orders must arrive within 30 minutes while maintaining food quality. Platforms that invest in route optimisation and rider incentive structures consistently outperform on both speed and customer satisfaction metrics.",q:"According to the passage, what helps food delivery platforms outperform competitors?",opts:["Reducing the number of riders","Route optimisation and rider incentive structures","Expanding restaurant supply","Lowering commission rates"],a:1,explanation:"The passage explicitly states that route optimisation and rider incentives improve performance."},
+    {passage:"Acquiring restaurant partners is one of the highest-leverage activities in a food delivery platform's growth strategy. Research shows that a diverse merchant supply directly increases order frequency and basket size among existing users. A structured onboarding process, including technical setup and an initial marketing boost, significantly reduces partner churn in the first 90 days.",q:"Why does the passage say merchant diversity is important?",opts:["It reduces logistics complexity","It increases order frequency and basket size","It lowers commission costs","It improves rider efficiency"],a:1,explanation:"The passage states diverse merchant supply increases order frequency and basket size."},
+    {passage:"In competitive markets, retaining existing users is up to five times less expensive than acquiring new ones. Leading platforms have responded by expanding into adjacent services such as grocery and pharmacy delivery to increase daily touchpoints. This super-app approach reduces churn risk even when competitors launch aggressive discount campaigns.",q:"What is the main business logic of the super-app strategy described?",opts:["It allows platforms to charge higher prices","It increases daily touchpoints and reduces churn","It simplifies logistics operations","It eliminates the need for discounts"],a:1,explanation:"The super-app strategy increases daily touchpoints and reduces churn — the passage's central argument."},
+    {passage:"Effective business development in the food delivery industry requires both language proficiency and cultural intelligence. BD representatives who can communicate clearly in English while understanding local business norms close deals 40% faster on average. The ability to explain complex commercial terms — such as commission structures, settlement cycles, and performance tiers — in plain language is particularly valued.",q:"According to the passage, what combination makes BD representatives more effective?",opts:["Technical skills and speed","Language proficiency and cultural intelligence","Local language only","Aggressive pricing tactics"],a:1,explanation:"The passage explicitly states language proficiency + cultural intelligence lead to 40% faster deal closure."},
+    {passage:"Data analytics has become a core competitive advantage in platform-based businesses. Food delivery platforms that use predictive modelling to anticipate demand surges can pre-position riders and reduce average delivery time by up to 25%. Beyond operations, data also enables personalised marketing and dynamic pricing — both of which improve unit economics significantly.",q:"How does predictive modelling help food delivery operations, according to the passage?",opts:["It eliminates the need for riders","It reduces delivery time by pre-positioning riders","It replaces human decision-making","It increases commission rates"],a:1,explanation:"The passage states predictive modelling helps pre-position riders, reducing delivery time by up to 25%."},
   ];
 
   const bank = [];
@@ -966,7 +1010,7 @@ function startTest(mode='assessment', examSet=0) {
   if(state.testTimer) clearInterval(state.testTimer);
   state.testTimer = setInterval(tickTestTimer,1000);
   showPage('test');
-  renderQuestion();
+  requestAnimationFrame(()=>renderQuestion());
 }
 
 function tickTestTimer() {
@@ -1491,35 +1535,46 @@ function startDayPractice(day) {
 // PRACTICE
 // ============================================================
 const VOCAB_BANK = [
-  {word:'Eloquent',phonetic:'/ˈel.ə.kwənt/',meaning:'Fluent and persuasive in speaking or writing',chinese:'流利而有说服力的（口才好的）',example:'She gave an eloquent speech.',tip:'常见搭配：eloquent speaker / eloquent silence'},
-  {word:'Ambiguous',phonetic:'/æmˈbɪɡ.ju.əs/',meaning:'Open to more than one interpretation; unclear',chinese:'含糊不清的，有歧义的',example:'The instructions were ambiguous.',tip:'反义词：unambiguous / clear。考试高频词！'},
-  {word:'Pragmatic',phonetic:'/præɡˈmæt.ɪk/',meaning:'Dealing with things sensibly and realistically',chinese:'务实的，实际的（不空谈理想）',example:'We need a pragmatic approach to this problem.',tip:'名词形式：pragmatism（实用主义）'},
-  {word:'Meticulous',phonetic:'/məˈtɪk.jə.ləs/',meaning:'Very careful and precise; showing great attention to detail',chinese:'一丝不苟的，极其细心的',example:'She is meticulous in her research.',tip:'强调对细节的高度关注，正面词。'},
-  {word:'Inevitable',phonetic:'/ɪnˈev.ɪ.tə.bəl/',meaning:'Certain to happen; unavoidable',chinese:'不可避免的，必然发生的',example:'Change is inevitable in any growing organisation.',tip:'反义词：avoidable。固定搭配：the inevitable（不可避免之事）'},
-  {word:'Concise',phonetic:'/kənˈsaɪs/',meaning:'Giving a lot of information clearly in few words',chinese:'简洁的，简明扼要的',example:'Please be concise in your reply.',tip:'写作评语常用词。类义：succinct / brief。'},
-  {word:'Elaborate',phonetic:'/ɪˈlæb.ər.ɪt/',meaning:'Detailed and carefully developed; to explain in more detail',chinese:'详尽的；详细阐述（动词）',example:'Could you elaborate on your point?',tip:'作动词时固定搭配：elaborate on sth.'},
-  {word:'Transparent',phonetic:'/trænsˈpær.ənt/',meaning:'Open, honest and not concealing anything',chinese:'透明的；（行为）坦诚公开的',example:'The company needs to be more transparent.',tip:'商业语境高频词。名词：transparency（透明度）'},
-  {word:'Persistent',phonetic:'/pəˈsɪs.tənt/',meaning:'Continuing firmly despite difficulty or opposition',chinese:'坚持不懈的，持续的',example:'Success requires persistent effort.',tip:'可正面（坚持）也可负面（缠人）。名词：persistence'},
-  {word:'Versatile',phonetic:'/ˈvɜː.sə.taɪl/',meaning:'Able to adapt or be used in many different ways',chinese:'多才多艺的；用途广泛的',example:'She is a versatile communicator.',tip:'描述人或物都可以。职场简历高频词！'},
-  {word:'Scrutinise',phonetic:'/ˈskruː.tɪ.naɪz/',meaning:'To examine or inspect closely and thoroughly',chinese:'仔细审查，详细检查',example:'The committee will scrutinise the proposal.',tip:'名词：scrutiny。英式拼写（美式：scrutinize）'},
-  {word:'Lucrative',phonetic:'/ˈluː.krə.tɪv/',meaning:'Producing a great deal of money; profitable',chinese:'有利可图的，赚钱的',example:'It was a lucrative business opportunity.',tip:'强调经济回报高。近义词：profitable / rewarding'},
-  {word:'Tenacious',phonetic:'/təˈneɪ.ʃəs/',meaning:'Holding firmly to a goal; very persistent',chinese:'坚韧不拔的，顽强的',example:'She is tenacious in pursuing her goals.',tip:'名词：tenacity。职场品质类高频词。'},
-  {word:'Mitigate',phonetic:'/ˈmɪt.ɪ.ɡeɪt/',meaning:'To make something less severe, serious or painful',chinese:'减轻，缓和（风险/影响）',example:'Measures were taken to mitigate the risks.',tip:'商务语境高频词。固定搭配：mitigate the risk/impact/effect'},
-  {word:'Redundant',phonetic:'/rɪˈdʌn.dənt/',meaning:'No longer needed or useful; made jobless',chinese:'多余的；（被）裁员的',example:'Several staff were made redundant.',tip:'英式英语常指"被裁员"。名词：redundancy'},
+  // ── 外卖 & 互联网行业 ──
+  {word:'Conversion',phonetic:'/kənˈvɜː.ʃən/',meaning:'The action of turning website visitors into paying customers',chinese:'转化（率）——访客变成下单用户的比率',example:'Our conversion rate improved after redesigning the checkout page.',tip:'电商核心指标：conversion rate / conversion funnel（转化漏斗）'},
+  {word:'Retention',phonetic:'/rɪˈten.ʃən/',meaning:'The ability to keep customers continuing to use a service',chinese:'留存（率）——用户持续使用产品的能力',example:'Improving user retention is key to sustainable growth.',tip:'核心指标：Day-1/Day-7/Day-30 retention。对应 churn rate（流失率）'},
+  {word:'Logistics',phonetic:'/ləˈdʒɪs.tɪks/',meaning:'The coordination of complex operations, especially delivery of goods',chinese:'物流；配送体系的统筹协调',example:'Efficient logistics is the backbone of any food delivery platform.',tip:'last-mile logistics（最后一公里配送）是外卖行业核心话题'},
+  {word:'Algorithm',phonetic:'/ˈæl.ɡə.rɪ.ðəm/',meaning:'A set of rules for solving a problem or making decisions automatically',chinese:'算法——自动决策的规则集合',example:'The dispatch algorithm assigns orders to the nearest available rider.',tip:'外卖派单、搜索排名、推荐系统都依赖 algorithm'},
+  {word:'Subsidise',phonetic:'/ˈsʌb.sɪ.daɪz/',meaning:'To support financially, especially by paying part of the cost',chinese:'补贴，资助（降低用户购买门槛）',example:'The platform subsidised delivery fees to attract new users.',tip:'外卖行业烧钱阶段常用词。名词：subsidy / subsidy burn'},
+  {word:'Scalable',phonetic:'/ˈskeɪ.lə.bəl/',meaning:'Able to grow in size, volume or capacity without losing performance',chinese:'可扩展的——规模扩大时性能不下降',example:'We need a scalable solution to handle peak-hour order surges.',tip:'互联网创业高频词：scalable business model（可扩展商业模式）'},
+  {word:'Incremental',phonetic:'/ˌɪŋ.krəˈmen.təl/',meaning:'Relating to small, regular stages of increase or improvement',chinese:'渐进的，逐步增加的',example:'We took an incremental approach to expanding into new cities.',tip:'incremental growth（增量增长）vs breakthrough growth（突破式增长）'},
+  {word:'Benchmark',phonetic:'/ˈben(t)ʃ.mɑːk/',meaning:'A standard point of reference for comparison or measurement',chinese:'基准；参照标准',example:'Our delivery time is well below the industry benchmark.',tip:'动词用法：to benchmark against competitors（与竞争对手对标）'},
+  {word:'Engagement',phonetic:'/ɪnˈɡeɪdʒ.mənt/',meaning:'The degree to which users actively interact with a product',chinese:'用户参与度，活跃度',example:'Daily active users are a key measure of engagement.',tip:'互联网三大指标之一。组合词：engagement rate / user engagement'},
+  {word:'Stakeholder',phonetic:'/ˈsteɪk.həʊl.dər/',meaning:"A person or group with an interest in an organisation's decisions",chinese:'利益相关方——对项目/公司有利益关系的人',example:'We must align all stakeholders before launching the new feature.',tip:'常见搭配：key stakeholders / stakeholder management（利益方管理）'},
+  // ── 商务谈判 & BD ──
+  {word:'Leverage',phonetic:'/ˈliː.vər.ɪdʒ/',meaning:'Power or advantage used to achieve a desired outcome',chinese:'筹码；影响力；杠杆作用',example:'Our market share gives us leverage in negotiations.',tip:'动词：to leverage relationships（利用关系/资源）。BD 核心词'},
+  {word:'Proposition',phonetic:'/ˌprɒp.əˈzɪʃ.ən/',meaning:'A statement or offer put forward for consideration',chinese:'价值主张；提案',example:'Our value proposition is faster delivery at lower cost.',tip:'value proposition（价值主张）是 BD pitch 必说的词'},
+  {word:'Viable',phonetic:'/ˈvaɪ.ə.bəl/',meaning:'Capable of working successfully or being done in practice',chinese:'可行的，切实可行的',example:'Is a 30-minute delivery window viable in this market?',tip:'反义词：unviable / not feasible。商务评估场景高频'},
+  {word:'Momentum',phonetic:'/məˈmen.təm/',meaning:'The force that keeps an activity developing or growing',chinese:'势头，推进力（增长动力）',example:'We need to maintain the momentum after a strong Q1.',tip:'build/gain/lose momentum。销售和增长分析常用'},
+  {word:'Incentivise',phonetic:'/ɪnˈsen.tɪ.vaɪz/',meaning:'To motivate someone to do something through rewards',chinese:'激励，提供诱因（促使人采取行动）',example:'We incentivised riders with a bonus to work during peak hours.',tip:'名词：incentive（激励机制）。外卖/BD 高频词'},
+  {word:'Prioritise',phonetic:'/praɪˈɒr.ɪ.taɪz/',meaning:'To decide the order of importance and deal with things accordingly',chinese:'优先处理，按重要性排序',example:'We must prioritise the accounts with highest GMV potential.',tip:'职场万能词。英式拼写（美式：prioritize）'},
+  {word:'Procurement',phonetic:'/prəˈkjʊə.mənt/',meaning:'The process of obtaining goods or services for an organisation',chinese:'采购，获取（资源/合同）',example:'Supply chain procurement affects our delivery cost significantly.',tip:'采购岗位必备词。动词：procure'},
+  {word:'Fluctuation',phonetic:'/ˌflʌk.tʃuˈeɪ.ʃən/',meaning:'Irregular changes in level, amount or quality',chinese:'波动，起伏（数据/价格/需求）',example:'Demand fluctuation during holidays challenges our logistics capacity.',tip:'動詞：fluctuate。数据分析常用：seasonal fluctuation（季节性波动）'},
+  {word:'Accountability',phonetic:'/əˌkaʊn.təˈbɪl.ɪ.ti/',meaning:'The fact of being responsible to others for your decisions',chinese:'问责制；负责任的状态',example:'Clear accountability helps teams deliver on commitments.',tip:'OKR / KPI 体系配套词。形容词：accountable'},
+  {word:'Collaborate',phonetic:'/kəˈlæb.ə.reɪt/',meaning:'To work jointly with others on a shared goal',chinese:'协作，合作（跨团队共同完成目标）',example:'We collaborated with the product team to improve the rider app.',tip:'名词：collaboration。职场面试超高频动词'},
 ];
 
 const SPEAKING_DRILLS = [
-  "Describe your hometown in three sentences.",
-  "What are the advantages and disadvantages of working from home?",
-  "Talk about a skill you would like to learn and why.",
-  "Describe a person who has had a positive influence on your life.",
-  "What do you think is the most important quality for a leader?"
+  "You are presenting to a restaurant partner. In 60 seconds, explain why joining our food delivery platform will increase their revenue. Mention at least two specific benefits.",
+  "Your BD team missed the weekly sign-up target. In a team meeting, propose two solutions to recover performance next week. Be specific and data-driven.",
+  "Describe the typical customer journey on a food delivery app — from opening the app to receiving the order. Use transition words: first, then, next, finally.",
+  "A restaurant owner is hesitant to join due to commission fees. How would you handle this objection? Provide at least one counter-argument.",
+  "You have just completed Q1 performance review. Describe your key achievements, one challenge you faced, and your plan for Q2. Keep it under 90 seconds.",
+  "Explain what 'conversion rate' means in the context of a food delivery platform, and suggest two ways to improve it.",
+  "A colleague suggests cutting delivery subsidies to reduce cost. Do you agree? Give your opinion with supporting reasons.",
 ];
 
 const LISTENING_EXERCISES = [
-  {text:"Effective communication requires both speaking clearly and listening actively to understand others.",q:"What does effective communication require?",a:"Both speaking and listening"},
-  {text:"The global economy is increasingly interconnected, making international cooperation more important than ever.",q:"What does the speaker say about the global economy?",a:"It's increasingly interconnected"},
-  {text:"Learning a second language not only helps you communicate but also improves cognitive flexibility.",q:"What benefit of learning a second language is mentioned?",a:"Improves cognitive flexibility"},
+  {text:"Our platform's monthly active users grew by 23% last quarter, driven mainly by improved retention among first-time users. The key initiative was a personalised re-engagement campaign targeting users who had not ordered in 14 days.",q:"What was the main driver of user growth?",a:"Improved retention through a re-engagement campaign for lapsed users"},
+  {text:"The logistics team has identified a 12-minute gap between order placement and rider dispatch during peak hours. Reducing this gap by 30% would improve our on-time delivery rate and directly impact customer satisfaction scores.",q:"What is the proposed improvement and its expected outcome?",a:"Reducing dispatch gap by 30% to improve on-time delivery and satisfaction"},
+  {text:"To expand into the Rio de Janeiro market, the BD team needs to onboard at least 200 restaurant partners in the first month. The focus should be on high-traffic areas such as Leblon, Ipanema and Barra da Tijuca.",q:"What is the BD team's initial target for the Rio expansion?",a:"Onboard 200+ restaurant partners, focusing on Leblon, Ipanema and Barra"},
+  {text:"A stakeholder analysis showed that restaurant partners have three main concerns: commission rate, payment cycle, and technical support. Addressing these proactively during the sales pitch significantly increases sign-up conversion.",q:"What are the three main concerns of restaurant partners?",a:"Commission rate, payment cycle, and technical support"},
+  {text:"Data shows that customers who use a promo code on their first order have a 40% higher chance of placing a second order within 7 days. This suggests that acquisition subsidies, when well-targeted, improve long-term retention.",q:"What does the data suggest about first-order promo codes?",a:"They increase the chance of a second order by 40%, improving retention"},
 ];
 
 let vocabFlipped = false;
@@ -1542,18 +1597,21 @@ function switchPracticeTab(tab, el) {
 }
 
 const PRONUNCIATION_DRILLS = [
-  {text:"The development of renewable energy has accelerated significantly in recent decades.",focus:"Focus on: ac-CEL-er-at-ed (4 syllables), sig-NIF-i-cant-ly"},
-  {text:"Communication technology has transformed the way people interact globally.",focus:"Focus on: com-mu-ni-CA-tion (5 syllables), trans-FORMED"},
-  {text:"Environmental conservation requires collective action from all sectors of society.",focus:"Focus on: en-vi-ron-MEN-tal, con-ser-VA-tion, COL-lec-tive"},
-  {text:"Scientific research often challenges our existing understanding of the natural world.",focus:"Focus on: sci-en-TIF-ic, CHAL-len-ges, un-der-STAND-ing"},
-  {text:"Cultural diversity enriches communities by bringing together different perspectives.",focus:"Focus on: di-VER-si-ty (4 syl), com-MU-ni-ties, per-SPEC-tives"},
-  {text:"Businesses must adapt to rapidly changing market conditions to remain competitive.",focus:"Focus on: RAP-id-ly, con-DI-tions, com-PET-i-tive"},
+  {text:"Our conversion rate increased by fifteen percent after we optimised the checkout flow.",focus:"Key words: CON-ver-sion (4 syl), op-TIM-ised, CHECK-out. Stress: rate in-CREASED"},
+  {text:"Scalable logistics infrastructure is essential for sustainable expansion into new markets.",focus:"Key words: SCA-la-ble, in-fra-STRUC-ture, sus-TAIN-a-ble, ex-PAN-sion"},
+  {text:"We need to prioritise high-value stakeholders to maximise our partnership conversion rate.",focus:"Key words: pri-OR-i-tise (5 syl), STAKE-hol-ders, MAX-im-ise, con-VER-sion"},
+  {text:"The algorithm dispatches orders to the nearest available rider to minimise delivery time.",focus:"Key words: AL-go-rithm (3 syl), dis-PATCHES, a-VAIL-a-ble, MIN-im-ise"},
+  {text:"Incremental growth in retention metrics demonstrates the effectiveness of our incentive programme.",focus:"Key words: in-cre-MEN-tal, re-TEN-tion, ef-FEC-tive-ness, IN-cen-tive"},
+  {text:"Our quarterly business review highlighted a significant fluctuation in weekend order volume.",focus:"Key words: QUAR-ter-ly, HIGH-light-ed, fluc-tu-A-tion, sig-NIF-i-cant"},
+  {text:"Accountability and collaboration are fundamental to achieving cross-functional alignment.",focus:"Key words: ac-count-a-BIL-i-ty (6 syl), col-lab-o-RA-tion, fun-da-MEN-tal, a-LIGN-ment"},
 ];
 
 const READING_PASSAGES = [
-  {title:"Remote Work Revolution",text:"The COVID-19 pandemic fundamentally changed how organisations think about the workplace. Many companies discovered that employees could be equally or more productive working from home. This shift has led to a permanent re-evaluation of office space needs, commuting patterns, and work-life balance policies.",q:"What was the main impact of the pandemic on workplaces?",a:"It changed how organisations think about workplace and remote work"},
-  {title:"Circular Economy",text:"Traditional linear economies follow a take-make-dispose model. The circular economy challenges this by designing out waste. Products are made to last longer, be repaired, and eventually recycled into new materials. This approach reduces environmental impact while potentially lowering costs.",q:"How does the circular economy differ from the traditional model?",a:"It designs out waste and focuses on repair and recycling instead of disposal"},
-  {title:"Artificial Intelligence in Business",text:"Artificial intelligence is transforming industries from healthcare to finance. Machine learning algorithms can analyse vast datasets in seconds, identifying patterns invisible to human analysts. However, questions remain about accountability, bias, and the long-term impact on employment.",q:"What concern is raised about AI in the passage?",a:"Questions about accountability, bias and employment impact"},
+  {title:"Last-Mile Delivery Challenges",text:"Last-mile delivery — the final step of getting a product from a distribution hub to the customer's door — accounts for over 50% of total logistics costs. Food delivery platforms face unique pressure here: orders must arrive within 30 minutes while maintaining food quality. Investing in route optimisation algorithms and rider incentive programmes has proved the most effective way to reduce both cost and delivery time.",q:"What is the main challenge described in this passage?",a:"Last-mile delivery is the costliest part of logistics and must balance speed with food quality"},
+  {title:"Restaurant Partner Acquisition",text:"Acquiring restaurant partners is one of the highest-leverage activities in a food delivery platform's growth strategy. Research shows that a diverse merchant supply — especially in cuisines underrepresented on the platform — directly increases order frequency and basket size among existing users. A well-structured onboarding process, including technical setup support and an initial marketing boost, significantly reduces partner churn in the first 90 days.",q:"Why is merchant diversity important according to the passage?",a:"It increases order frequency and basket size among existing users"},
+  {title:"User Retention in Super-Apps",text:"In competitive markets, acquiring new users is five times more expensive than retaining existing ones. Leading food delivery platforms have responded by expanding their service offerings — from groceries to pharmaceuticals — to increase daily touchpoints with users. This strategy, often called the 'super-app' model, aims to make the platform indispensable in everyday life, reducing the risk of churn when competitors offer promotional discounts.",q:"What is the key benefit of the super-app strategy described?",a:"It increases daily touchpoints and reduces churn even when competitors offer discounts"},
+  {title:"Data-Driven Operations",text:"Modern food delivery platforms generate millions of data points daily — order patterns, rider locations, restaurant preparation times, and customer feedback. Analysing this data allows operations teams to predict demand surges, pre-position riders, and dynamically adjust delivery fees. Companies that build strong data capabilities consistently outperform peers on both customer satisfaction and operational efficiency.",q:"What operational advantage does data analysis provide, according to the passage?",a:"It allows demand prediction, better rider positioning and dynamic fee adjustment"},
+  {title:"Negotiating with SMB Partners",text:"Small and medium-sized restaurant owners often approach platform negotiations with limited business information and high anxiety about commission rates. Effective business development representatives acknowledge these concerns early and reframe the conversation around incremental revenue — the additional orders the platform will generate — rather than focusing on cost. This approach, combined with transparent reporting of performance metrics, builds long-term trust and reduces partner churn.",q:"How should BD representatives reframe commission discussions with SMB partners?",a:"Focus on incremental revenue the platform generates rather than the cost of commission"},
 ];
 
 function renderPronunciationTab(container) {
@@ -1751,7 +1809,7 @@ function startExam(setNum) {
     document.getElementById('examTimer').textContent=`${m}:${s}`;
     if(state.examTimeLeft<=0) submitExam();
   },1000);
-  renderExamQuestion();
+  requestAnimationFrame(()=>requestAnimationFrame(()=>renderExamQuestion()));
 }
 
 function renderExamQuestion() {
