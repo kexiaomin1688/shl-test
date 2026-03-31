@@ -252,16 +252,21 @@ canvas.chart { width:100%; border-radius:8px; }
     <div class="login-logo">SHL<span class="accent">.</span>TEST</div>
     <div class="login-subtitle">ENGLISH ASSESSMENT SYSTEM</div>
     <div class="login-card fade-in">
-      <h2>Access Portal</h2>
-      <p>Enter your invitation code to continue</p>
+      <h2>👋 Welcome</h2>
+      <p>Enter your name to start. Your scores will be saved automatically.</p>
       <div class="form-group">
-        <label class="form-label">Invitation Code</label>
-        <input type="password" class="form-input" id="inviteInput" placeholder="Enter code..." onkeydown="if(event.key==='Enter')doLogin()">
+        <label class="form-label">Your Name</label>
+        <input type="text" class="form-input" id="nameInput" placeholder="e.g. Jason, Lily..." onkeydown="if(event.key==='Enter')doLogin()" autocomplete="off" maxlength="30">
       </div>
-      <button class="btn btn-primary" style="width:100%" onclick="doLogin()">Access System →</button>
-      <div class="login-error" id="loginError">⚠ Invalid invitation code. Please try again.</div>
+      <!-- Returning users list -->
+      <div id="savedUsersList" style="margin-bottom:1rem;display:none">
+        <div style="font-size:.8rem;color:var(--text2);margin-bottom:.5rem;">Recent users — click to log in:</div>
+        <div id="savedUsersChips" style="display:flex;flex-wrap:wrap;gap:.4rem;"></div>
+      </div>
+      <button class="btn btn-primary" style="width:100%" onclick="doLogin()">Start → </button>
+      <div class="login-error" id="loginError">⚠ Please enter your name to continue.</div>
     </div>
-    <div style="margin-top:1.5rem;color:var(--text2);font-size:.8rem;">SHL Test Preparation Platform v2.0</div>
+    <div style="margin-top:1.5rem;color:var(--text2);font-size:.8rem;">SHL Test Preparation Platform v3.0 · Scores saved per user</div>
   </div>
 </div>
 
@@ -277,7 +282,10 @@ canvas.chart { width:100%; border-radius:8px; }
       <button class="nav-btn" onclick="showPage('exam')">Mock Exam</button>
       <button class="nav-btn" onclick="showPage('stats')">Statistics</button>
     </div>
-    <div class="nav-user" id="navUser"></div>
+    <div style="display:flex;align-items:center;gap:.5rem">
+      <span id="navUserName" style="color:var(--text2);font-size:.85rem"></span>
+      <button class="nav-btn" onclick="switchUser()" style="font-size:.8rem;padding:.3rem .7rem;opacity:.7">Switch User</button>
+    </div>
   </nav>
   <div class="home-hero fade-in">
     <h1>Master English with <span class="accent">AI-Powered</span> Assessment</h1>
@@ -490,8 +498,12 @@ canvas.chart { width:100%; border-radius:8px; }
       <canvas class="chart" id="dimChart" height="150"></canvas>
     </div>
     <div class="chart-container">
-      <div class="chart-title">Recent Sessions</div>
+      <div class="chart-title">📋 Score History</div>
       <div class="history-list" id="historyList"></div>
+    </div>
+    <div class="chart-container">
+      <div class="chart-title">🏆 Leaderboard</div>
+      <div class="history-list" id="leaderboardList"></div>
     </div>
   </div>
 </div>
@@ -526,6 +538,28 @@ const REAL_SHL_QUESTIONS = [
   {type:'numerical',dim:'vocab',stem:"In a survey of 400 employees, 35% prefer remote work. How many employees is that?",options:["120","140","150","160"],a:1,explanation:"400 \u00d7 0.35 = 140"},
   {type:'numerical',dim:'vocab',stem:"A product costs \u00a380 and sells for \u00a3120. What is the percentage profit margin (on cost)?",options:["33%","40%","50%","25%"],a:2,explanation:"Profit = \u00a340. Margin on cost = 40/80 \u00d7 100 = 50%"},
   {type:'numerical',dim:'vocab',stem:"Sales grew from 1,200 units to 1,560 units. What is the percentage increase?",options:["25%","30%","35%","40%"],a:1,explanation:"(1560-1200)/1200 \u00d7 100 = 360/1200 \u00d7 100 = 30%"},
+
+  // === VERBAL REASONING – SET 2 ===
+  {type:'verbal',dim:'vocab',passage:"Blockchain technology underpins cryptocurrencies like Bitcoin. It is a decentralised ledger recording transactions across many computers. Proponents argue it offers transparency and security. Critics highlight high energy consumption and potential use in illicit activities. Regulatory frameworks are still being developed globally.",statement:"Blockchain technology is only used for cryptocurrencies.",options:["True","False","Cannot Say"],a:1,explanation:"False — the passage says it underpins them but does not claim exclusive use."},
+  {type:'verbal',dim:'vocab',passage:"Blockchain technology underpins cryptocurrencies like Bitcoin. It is a decentralised ledger recording transactions across many computers. Proponents argue it offers transparency and security. Critics highlight high energy consumption and potential use in illicit activities. Regulatory frameworks are still being developed globally.",statement:"Global regulations for blockchain are fully established.",options:["True","False","Cannot Say"],a:1,explanation:"False — regulations are still being developed, not fully established."},
+  {type:'verbal',dim:'vocab',passage:"The gig economy refers to a labour market characterised by short-term contracts and freelance work. It offers workers flexibility but lacks the job security and benefits of traditional employment. Platforms like ride-sharing and food delivery apps have accelerated gig work. Some economists warn of growing income inequality.",statement:"Gig workers typically receive the same benefits as full-time employees.",options:["True","False","Cannot Say"],a:1,explanation:"False — the passage explicitly states gig work lacks benefits of traditional employment."},
+  {type:'verbal',dim:'vocab',passage:"The gig economy refers to a labour market characterised by short-term contracts and freelance work. It offers workers flexibility but lacks the job security and benefits of traditional employment. Platforms like ride-sharing and food delivery apps have accelerated gig work. Some economists warn of growing income inequality.",statement:"Technology platforms have contributed to the growth of gig work.",options:["True","False","Cannot Say"],a:0,explanation:"True — ride-sharing and food delivery apps are cited as accelerating gig work."},
+  {type:'verbal',dim:'vocab',passage:"Space tourism is transitioning from concept to reality. Several private companies have launched suborbital flights carrying paying passengers. Tickets currently cost hundreds of thousands of dollars. Supporters see it as the beginning of commercial space travel. Environmental groups have raised concerns about carbon emissions from rocket launches.",statement:"Space tourism is currently affordable for most people.",options:["True","False","Cannot Say"],a:1,explanation:"False — tickets cost hundreds of thousands of dollars, making it unaffordable for most."},
+  {type:'verbal',dim:'vocab',passage:"Space tourism is transitioning from concept to reality. Several private companies have launched suborbital flights carrying paying passengers. Tickets currently cost hundreds of thousands of dollars. Supporters see it as the beginning of commercial space travel. Environmental groups have raised concerns about carbon emissions from rocket launches.",statement:"There are environmental concerns associated with space tourism.",options:["True","False","Cannot Say"],a:0,explanation:"True — environmental groups have raised concerns about rocket carbon emissions."},
+  {type:'verbal',dim:'vocab',passage:"Mindfulness meditation has gained mainstream acceptance as a stress management tool. Research indicates it can reduce symptoms of anxiety and depression. Corporations have introduced mindfulness programmes for employees. However, some researchers caution that the evidence base is still limited and that mindfulness is not a substitute for professional mental health treatment.",statement:"Mindfulness meditation has been proven to cure depression.",options:["True","False","Cannot Say"],a:1,explanation:"False — research shows it can reduce symptoms, not cure depression."},
+  {type:'verbal',dim:'vocab',passage:"Mindfulness meditation has gained mainstream acceptance as a stress management tool. Research indicates it can reduce symptoms of anxiety and depression. Corporations have introduced mindfulness programmes for employees. However, some researchers caution that the evidence base is still limited and that mindfulness is not a substitute for professional mental health treatment.",statement:"Some researchers believe the evidence for mindfulness is not yet conclusive.",options:["True","False","Cannot Say"],a:0,explanation:"True — some researchers caution that the evidence base is still limited."},
+
+  // === SITUATIONAL JUDGEMENT – SET 2 ===
+  {type:'situation',dim:'situation',stem:"Your manager asks you to complete a report by end of day, but you realise you are missing key data that only another department can provide. What should you do?",options:["Submit an incomplete report without mentioning the gap","Inform your manager immediately and request an extension or assistance","Wait and hope the data arrives in time","Ask a colleague to guess the missing figures"],a:1,explanation:"Proactively communicating obstacles to your manager allows for a realistic solution and demonstrates responsibility."},
+  {type:'situation',dim:'situation',stem:"You are leading a project and a team member consistently misses deadlines. What is the most appropriate first step?",options:["Escalate to HR immediately","Have a private, supportive conversation to understand the root cause","Publicly reprimand them in a team meeting","Reassign all their tasks without explanation"],a:1,explanation:"A private, empathetic conversation is the most constructive first step before escalating."},
+  {type:'situation',dim:'situation',stem:"During a client call, your colleague gives incorrect pricing information. What do you do?",options:["Stay silent to avoid embarrassing them","Politely interject to clarify the price for the client","Correct them harshly in front of the client","End the call and report them to management"],a:1,explanation:"A polite, face-saving clarification protects both the client relationship and team professionalism."},
+
+  // === NUMERICAL REASONING – SET 2 ===
+  {type:'numerical',dim:'vocab',stem:"A team of 5 completes a project in 12 days. How many days would it take 3 people at the same rate?",options:["18 days","20 days","15 days","24 days"],a:1,explanation:"5 x 12 = 60 person-days. 60 / 3 = 20 days."},
+  {type:'numerical',dim:'vocab',stem:"A store discounts a \u00a3150 item by 20%, then applies an additional 10% off the sale price. What is the final price?",options:["\u00a3105","\u00a3108","\u00a3112","\u00a3115"],a:1,explanation:"\u00a3150 x 0.80 = \u00a3120. \u00a3120 x 0.90 = \u00a3108."},
+  {type:'numerical',dim:'vocab',stem:"If 3 out of every 8 employees work remotely, and the company has 240 employees, how many work remotely?",options:["60","80","90","96"],a:2,explanation:"(3/8) x 240 = 90 employees."},
+  {type:'numerical',dim:'vocab',stem:"A project budget is \u00a350,000. After spending \u00a332,500, what percentage of the budget remains?",options:["35%","40%","45%","50%"],a:0,explanation:"Remaining = \u00a317,500. 17500/50000 x 100 = 35%."},
+  {type:'numerical',dim:'vocab',stem:"Sales data: Q1=\u00a380k, Q2=\u00a396k, Q3=\u00a384k, Q4=\u00a3100k. What is the average quarterly revenue?",options:["\u00a388k","\u00a390k","\u00a392k","\u00a395k"],a:1,explanation:"(80+96+84+100)/4 = 360/4 = \u00a390k."},
 ];
 const DIMS = ['Pronunciation','Fluency','Listening','Vocabulary','Comprehension','Grammar'];
 const DIM_KEYS = ['A','B','C','D','E','F'];
@@ -537,6 +571,13 @@ const S = {
   get:(k,d=null)=>{ try{ const v=localStorage.getItem(k); return v!==null?JSON.parse(v):d; }catch(e){return d;} },
   set:(k,v)=>{ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} },
   push:(k,v)=>{ const a=S.get(k,[]); a.push(v); S.set(k,a); }
+};
+// User-scoped storage helpers
+const US = {
+  key:(k)=>{ const u=state.currentUser||'guest'; return k+'_u_'+u; },
+  get:(k,d=null)=>S.get(US.key(k),d),
+  set:(k,v)=>S.set(US.key(k),v),
+  push:(k,v)=>{ const a=US.get(k,[]); a.push(v); US.set(k,a); }
 };
 
 // ============================================================
@@ -685,6 +726,7 @@ function calcScore(answers, questions) {
 // ============================================================
 let state = {
   page: 'login',
+  currentUser: '',
   testQuestions: [],
   testAnswers: [],
   testCurrent: 0,
@@ -716,6 +758,15 @@ function showPage(name) {
   if(name !== 'login') {
     const lp = document.getElementById('page-login');
     if(lp) lp.style.display = 'none';
+    // Update nav username display
+    const navName = document.getElementById('navUserName');
+    if(navName) navName.textContent = state.currentUser ? '👤 '+state.currentUser : '';
+  } else {
+    // Re-show login page
+    const lp = document.getElementById('page-login');
+    if(lp) lp.style.display = 'flex';
+    initLoginPage();
+    return;
   }
   document.getElementById('page-'+name).classList.add('active');
   state.page = name;
@@ -728,22 +779,76 @@ function showPage(name) {
 }
 
 function doLogin() {
-  const code = document.getElementById('inviteInput').value.trim();
-  if(true) { // login gate removed
-    S.set('shl_logged','1');
-    document.getElementById('loginError').style.display='none';
-    showPage('home');
-  } else {
+  const name = document.getElementById('nameInput').value.trim();
+  if(!name) {
     document.getElementById('loginError').style.display='block';
-    document.getElementById('inviteInput').value='';
+    return;
+  }
+  document.getElementById('loginError').style.display='none';
+  // Save current user
+  state.currentUser = name;
+  S.set('shl_current_user', name);
+  // Add to known users list
+  const users = S.get('shl_users', []);
+  if(!users.includes(name)) { users.unshift(name); S.set('shl_users', users.slice(0,10)); }
+  showPage('home');
+}
+
+function initLoginPage() {
+  // Show saved users as chips
+  const users = S.get('shl_users', []);
+  const container = document.getElementById('savedUsersList');
+  const chips = document.getElementById('savedUsersChips');
+  if(users.length > 0) {
+    container.style.display='block';
+    chips.innerHTML = users.map(u => {
+      const hist = S.get('shl_scores_'+u, []);
+      const best = hist.length ? Math.max(...hist.map(h=>h.score||0)) : 0;
+      const tag = best ? ` <span style="color:#00a651;font-size:.75rem;">${best}%</span>` : '';
+      return `<button class="btn btn-outline" style="font-size:.8rem;padding:.25rem .7rem" onclick="quickLogin('${u.replace(/'/g,"\\'")}')">👤 ${u}${tag}</button>`;
+    }).join('');
   }
 }
 
+function quickLogin(name) {
+  document.getElementById('nameInput').value = name;
+  doLogin();
+}
+
+function switchUser() {
+  // Clear current user session but keep scores
+  state.currentUser = '';
+  S.set('shl_current_user', '');
+  initLoginPage();
+  showPage('login');
+}
+
 function initApp() {
-  if(S.get('shl_logged')) {
-    showPage('home');
+  const lastUser = S.get('shl_current_user');
+  state.currentUser = lastUser || '';
+  // Setup beforeunload warning
+  window.addEventListener('beforeunload', function(e) {
+    if(state.page === 'test' || state.page === 'exam') {
+      const msg = '⚠️ You are in the middle of a test! Your progress will be lost if you close or leave this page.';
+      e.preventDefault();
+      e.returnValue = msg;
+      return msg;
+    }
+  });
+  initLoginPage();
+  // If previously logged in, go straight to home
+  if(lastUser) {
+    state.currentUser = lastUser;
+    const lp = document.getElementById('page-login');
+    if(lp) lp.style.display = 'none';
+    const navName = document.getElementById('navUserName');
+    if(navName) navName.textContent = '👤 ' + lastUser;
+    document.getElementById('page-home').classList.add('active');
+    state.page = 'home';
+    initHome();
   } else {
-    showPage('login');
+    const lp = document.getElementById('page-login');
+    if(lp) lp.style.display = 'flex';
   }
 }
 
@@ -751,20 +856,28 @@ function initApp() {
 // HOME
 // ============================================================
 function initHome() {
-  const history = S.get('shl_history',[]);
-  const wrong = S.get('shl_wrong',[]);
+  const history = US.get('shl_history',[]);
+  const wrong = US.get('shl_wrong',[]);
   const stats = document.getElementById('homeStats');
   stats.innerHTML = '';
+  // Show username
+  const nameEl = document.getElementById('homeUserName');
+  if(nameEl) nameEl.textContent = state.currentUser || 'Guest';
   if(history.length) {
     const last = history[history.length-1];
+    const best = Math.max(...history.map(h=>h.total||0));
     stats.innerHTML = `
-      <div class="stat-chip">Last Score: ${last.total}/100</div>
+      <div class="stat-chip">👤 ${state.currentUser}</div>
+      <div class="stat-chip">Last: ${last.total}/100</div>
+      <div class="stat-chip">Best: ${best}/100</div>
       <div class="stat-chip">Level: ${last.cefr}</div>
       <div class="stat-chip">Sessions: ${history.length}</div>
-      <div class="stat-chip">Wrong Items: ${wrong.length}</div>
+      <div class="stat-chip">⚠️ Wrong: ${wrong.filter(w=>!w.mastered).length}</div>
     `;
+  } else {
+    stats.innerHTML = `<div class="stat-chip">👋 Welcome, ${state.currentUser}! No tests yet.</div>`;
   }
-  document.getElementById('wrongCountBadge').textContent = wrong.length + ' Items';
+  document.getElementById('wrongCountBadge').textContent = wrong.filter(w=>!w.mastered).length + ' Items';
 }
 
 // ============================================================
@@ -908,7 +1021,11 @@ function submitTest() {
   answers.forEach((a,i)=>{ if(a===null) answers[i]={score:0,chosen:null}; });
   const result = calcScore(answers, questions);
   state.lastResult = result;
-  S.push('shl_history',{...result, date:new Date().toISOString(), mode:state.testMode});
+  const entry = {...result, date:new Date().toISOString(), mode:state.testMode, user:state.currentUser};
+  US.push('shl_history', entry);
+  // Also save to leaderboard key for cross-user stats
+  const lbKey = 'shl_scores_'+state.currentUser;
+  S.push(lbKey, {total:result.total, cefr:result.cefr, date:entry.date});
   if(state.testMode==='assessment') {
     generateStudyPlan(result.cefr);
   }
@@ -1149,11 +1266,11 @@ function drawRadar(canvasId, dims) {
 // WRONG ANSWERS
 // ============================================================
 function addToWrong(q, chosen) {
-  const wrongs=S.get('shl_wrong',[]);
+  const wrongs=US.get('shl_wrong',[]);
   const exists=wrongs.find(w=>w.id===q.id);
   if(!exists) {
     wrongs.push({...q,wrongChosen:chosen,mastered:false,addedAt:Date.now()});
-    S.set('shl_wrong',wrongs);
+    US.set('shl_wrong',wrongs);
   }
 }
 
@@ -1322,7 +1439,7 @@ function checkListenAns(correct) {
 }
 
 function renderWrongTab(container) {
-  const wrongs=S.get('shl_wrong',[]).filter(w=>!w.mastered);
+  const wrongs=US.get('shl_wrong',[]).filter(w=>!w.mastered);
   if(!wrongs.length) {
     container.innerHTML=`<div class="card" style="text-align:center;padding:3rem"><div style="font-size:2rem;margin-bottom:1rem">🎉</div><div>No wrong answers to review!</div></div>`;
     return;
@@ -1341,12 +1458,12 @@ function renderWrongTab(container) {
 }
 
 function markMastered(idx) {
-  const wrongs=S.get('shl_wrong',[]);
+  const wrongs=US.get('shl_wrong',[]);
   const notMastered=wrongs.filter(w=>!w.mastered);
   if(notMastered[idx]) {
     const origIdx=wrongs.indexOf(notMastered[idx]);
     wrongs[origIdx].mastered=true;
-    S.set('shl_wrong',wrongs);
+    US.set('shl_wrong',wrongs);
     renderWrongTab(document.getElementById('practiceContent'));
   }
 }
@@ -1360,7 +1477,7 @@ function initExamSelect() {
   document.getElementById('examProgressText').textContent='';
   document.getElementById('examTimer').textContent='';
   const grid=document.getElementById('examSetGrid');
-  const history=S.get('shl_history',[]);
+  const history=US.get('shl_history',[]);
   grid.innerHTML=Array.from({length:5},(_,i)=>{
     const done=history.filter(h=>h.mode==='exam'&&h.examSet===i+1);
     const bestScore=done.length?Math.max(...done.map(h=>h.total)):null;
@@ -1490,7 +1607,7 @@ function submitExam() {
   const result=calcScore(state.examAnswers,state.examQuestions);
   result.mode='exam';result.examSet=state.examSet;
   state.lastResult=result;
-  S.push('shl_history',{...result,date:new Date().toISOString()});
+  US.push('shl_history',{...result,date:new Date().toISOString()});
   document.getElementById('examSelectView').style.display='flex';
   document.getElementById('examQuizView').style.display='none';
   showPage('result');
@@ -1512,39 +1629,81 @@ function confirmExamExit() {
 // STATISTICS
 // ============================================================
 function initStats() {
-  const history=S.get('shl_history',[]);
-  const wrong=S.get('shl_wrong',[]);
+  const history=US.get('shl_history',[]);
+  const wrong=US.get('shl_wrong',[]);
   const grid=document.getElementById('statsGrid');
   const best=history.length?Math.max(...history.map(h=>h.total)):0;
   const last=history.length?history[history.length-1]:null;
+  const avg=history.length?Math.round(history.reduce((a,h)=>a+h.total,0)/history.length):0;
+
   grid.innerHTML=`
+    <div class="stat-card"><div class="stat-value">👤</div><div class="stat-label">${state.currentUser||'Guest'}</div></div>
     <div class="stat-card"><div class="stat-value">${history.length}</div><div class="stat-label">Total Sessions</div></div>
     <div class="stat-card"><div class="stat-value">${best}</div><div class="stat-label">Best Score</div></div>
+    <div class="stat-card"><div class="stat-value">${avg}</div><div class="stat-label">Average Score</div></div>
     <div class="stat-card"><div class="stat-value">${last?last.cefr:'—'}</div><div class="stat-label">Current Level</div></div>
     <div class="stat-card"><div class="stat-value">${wrong.filter(w=>!w.mastered).length}</div><div class="stat-label">Wrong Items</div></div>
     <div class="stat-card"><div class="stat-value">${wrong.filter(w=>w.mastered).length}</div><div class="stat-label">Mastered</div></div>
-    <div class="stat-card"><div class="stat-value">${history.length?Math.round(history.reduce((a,h)=>a+h.total,0)/history.length):0}</div><div class="stat-label">Avg Score</div></div>
   `;
 
-  // Score chart
-  drawLineChart('scoreChart', history.slice(-10).map((h,i)=>({x:i,y:h.total,label:new Date(h.date).toLocaleDateString()})), 'Score', '#3b82f6');
+  // Score trend chart
+  drawLineChart('scoreChart', history.slice(-15).map((h,i)=>({x:i,y:h.total,label:new Date(h.date).toLocaleDateString()})), 'Score', '#3b82f6');
 
   // CEFR chart
-  const cefrNums=history.slice(-10).map(h=>CEFR_LEVELS.indexOf(h.cefr)*25);
+  const cefrNums=history.slice(-15).map(h=>CEFR_LEVELS.indexOf(h.cefr)*25);
   drawLineChart('cefrChart', cefrNums.map((y,i)=>({x:i,y,label:CEFR_LEVELS[Math.round(y/25)]})), 'CEFR', '#10b981', ['A1','A2','B1','B2','C1']);
 
   // Dim chart
   if(last) drawDimBars('dimChart', last.dims);
 
-  // History list
+  // History list with wrong items highlighted
   const list=document.getElementById('historyList');
-  list.innerHTML=history.slice().reverse().slice(0,8).map(h=>`
-    <div class="history-item">
-      <span>${new Date(h.date).toLocaleString()}</span>
-      <span class="badge badge-blue">${h.mode==='exam'?`Exam Set ${h.examSet||'?'}`:'Assessment'}</span>
+  const headerHtml = history.length ? '<div style="font-size:.85rem;color:var(--text2);margin-bottom:.5rem;">📋 Score history for <b>'+state.currentUser+'</b> — '+history.length+' session(s)</div>' : '';
+  list.innerHTML = headerHtml +
+  history.slice().reverse().slice(0,15).map((h,i)=>{
+    const date=new Date(h.date).toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+    const trend=i===0?'':history.slice().reverse()[i-1]&&h.total>history.slice().reverse()[i-1].total?'↑':'↓';
+    const trendColor=trend==='↑'?'color:#10b981':trend==='↓'?'color:#ef4444':'';
+    return `<div class="history-item">
+      <span style="color:var(--text2);font-size:.85rem">${date}</span>
+      <span class="badge badge-blue">${h.mode==='exam'?'Exam Set '+(h.examSet||'?'):'Assessment'}</span>
       <span style="font-weight:700;color:var(--accent3)">${h.total}/100</span>
       <span class="badge badge-green">${h.cefr}</span>
-    </div>`).join('')||'<div style="color:var(--text2);text-align:center;padding:1rem">No sessions yet</div>';
+      ${trend?`<span style="${trendColor};font-weight:700">${trend}</span>`:''}
+    </div>`;
+  }).join('')||'<div style="color:var(--text2);text-align:center;padding:1rem">No sessions yet</div>';
+
+  // All-users leaderboard
+  renderLeaderboard();
+}
+
+function renderLeaderboard() {
+  const container = document.getElementById('leaderboardList');
+  if(!container) return;
+  const users = S.get('shl_users', []);
+  if(!users.length) { container.innerHTML='<div style="color:var(--text2);font-size:.85rem;text-align:center">No users yet</div>'; return; }
+  const rows = users.map(u => {
+    const hist = S.get('shl_scores_'+u, []).concat(
+      // also check user-scoped history
+      (() => { try { const k = 'shl_history_u_'+u; const v = localStorage.getItem(k); return v ? JSON.parse(v) : []; } catch(e){ return []; } })()
+    );
+    const best = hist.length ? Math.max(...hist.map(h=>h.total||0)) : 0;
+    const sessions = hist.length;
+    const last = hist.length ? hist[hist.length-1] : null;
+    return { u, best, sessions, cefr: last ? last.cefr : '—' };
+  }).sort((a,b) => b.best - a.best);
+
+  container.innerHTML = `
+    <div style="font-size:.85rem;color:var(--text2);margin-bottom:.5rem;">🏆 All-User Leaderboard</div>
+    ${rows.map((r,i)=>`
+      <div class="history-item" style="${r.u===state.currentUser?'border-color:#00a651;background:rgba(0,166,81,0.06)':''}">
+        <span style="font-weight:700;color:var(--text2)">#${i+1}</span>
+        <span style="font-weight:600">${r.u===state.currentUser?'👤 '+r.u:r.u}</span>
+        <span class="badge badge-blue">${r.sessions} sessions</span>
+        <span style="font-weight:700;color:var(--accent3)">${r.best}/100</span>
+        <span class="badge badge-green">${r.cefr}</span>
+      </div>`).join('')}
+  `;
 }
 
 function drawLineChart(id, data, label, color, yLabels=null) {
