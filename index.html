@@ -297,7 +297,7 @@ canvas.chart { width:100%; border-radius:8px; }
     <div class="home-card" onclick="showPage('test')">
       <div class="home-card-icon">🎯</div>
       <h3>Level Assessment</h3>
-      <p>24-question diagnostic test to determine your CEFR level across 6 dimensions</p>
+      <p>28-question diagnostic test to determine your CEFR level across 6 dimensions</p>
       <div style="margin-top:1rem"><span class="badge badge-blue">24 Questions</span></div>
     </div>
     <div class="home-card" onclick="showPage('study')">
@@ -456,7 +456,7 @@ canvas.chart { width:100%; border-radius:8px; }
   <div id="examSelectView" class="exam-select">
     <div>
       <h2 style="text-align:center;margin-bottom:.5rem">Select Mock Exam Set</h2>
-      <p style="text-align:center;color:var(--text2);font-size:.9rem;margin-bottom:2rem">24 questions · 45 minutes · Six dimensions</p>
+      <p style="text-align:center;color:var(--text2);font-size:.9rem;margin-bottom:2rem">28 questions · 45 minutes · Six dimensions</p>
       <div class="exam-select-grid" id="examSetGrid"></div>
     </div>
   </div>
@@ -581,7 +581,7 @@ const US = {
 };
 
 // ============================================================
-// QUESTION BANK (24 questions per set type)
+// QUESTION BANK (28 questions per set: A×3, B×4, C×3, D×10, E×5, F×3)
 // ============================================================
 function generateQuestions(seed=0) {
   const readingTexts = [
@@ -614,16 +614,50 @@ function generateQuestions(seed=0) {
     {q:"[Listen] According to the speaker:",speech:"Critical thinking and problem-solving skills are increasingly valued in today's job market.",opts:["Technical skills only matter","Critical thinking is valued","Grades are everything","Language is unimportant"],a:1},
   ];
 
+  // Extended vocabulary question bank (20 questions)
+  const vocabQsAll = [
+    {q:"What does 'elaborate' mean?",opts:["Simple","Detailed and complex","Confusing","Ordinary"],a:1,explanation:"'Elaborate' means detailed and complex."},
+    {q:"Choose the synonym for 'ambiguous':",opts:["Clear","Certain","Unclear","Definite"],a:2,explanation:"'Ambiguous' means unclear or having more than one meaning."},
+    {q:"What is the meaning of 'concise'?",opts:["Brief and clear","Lengthy","Complicated","Emotional"],a:0,explanation:"'Concise' means giving a lot of information in few words."},
+    {q:"'Inevitable' means:",opts:["Possible","Avoidable","Uncertain","Unavoidable"],a:3,explanation:"'Inevitable' means certain to happen, unavoidable."},
+    {q:"The antonym of 'transparent' is:",opts:["Clear","Opaque","Bright","Open"],a:1,explanation:"'Opaque' is the opposite — not able to be seen through."},
+    {q:"'Pragmatic' means:",opts:["Idealistic","Practical","Theoretical","Romantic"],a:1,explanation:"'Pragmatic' means dealing with things sensibly and practically."},
+    {q:"Choose the correct meaning of 'eloquent':",opts:["Silent","Fluent and persuasive","Confused","Angry"],a:1,explanation:"'Eloquent' means well-spoken and persuasive."},
+    {q:"What does 'meticulous' mean?",opts:["Careless","Very careful and precise","Fast","Loud"],a:1,explanation:"'Meticulous' means showing great attention to detail."},
+    {q:"'Scrutinise' means to:",opts:["Ignore","Examine carefully","Guess","Approve quickly"],a:1,explanation:"To scrutinise is to examine or inspect closely."},
+    {q:"The word 'lucrative' means:",opts:["Expensive","Profitable","Dangerous","Creative"],a:1,explanation:"'Lucrative' means producing a great deal of profit."},
+    {q:"'Tenacious' most closely means:",opts:["Weak","Stubborn","Persistent and determined","Flexible"],a:2,explanation:"'Tenacious' means holding firmly to a position or persisting."},
+    {q:"What does 'mitigate' mean?",opts:["Worsen","Lessen or reduce","Ignore","Create"],a:1,explanation:"To mitigate means to make something less severe or harmful."},
+    {q:"'Redundant' in a workplace context means:",opts:["Essential","No longer needed","Overworked","Promoted"],a:1,explanation:"Redundant means no longer needed or superfluous."},
+    {q:"What does 'consensus' mean?",opts:["Disagreement","General agreement","A formal vote","A contract"],a:1,explanation:"Consensus is a general agreement among a group."},
+    {q:"'Delegate' as a verb means to:",opts:["Do everything yourself","Assign a task to someone else","Cancel a meeting","Promote"],a:1,explanation:"To delegate means to entrust a task to another person."},
+    {q:"What is the meaning of 'benchmark'?",opts:["A physical mark on a desk","A standard point of reference for comparison","An outdated method","A type of test"],a:1,explanation:"A benchmark is a standard or point of reference against which things are measured."},
+    {q:"'Procrastinate' means to:",opts:["Work ahead of schedule","Delay or put off doing something","Plan carefully","Multitask"],a:1,explanation:"To procrastinate is to delay or postpone action."},
+    {q:"'Leverage' in business means:",opts:["A physical tool","Use something to maximum advantage","A financial loss","A type of meeting"],a:1,explanation:"To leverage means to use something to maximum advantage."},
+    {q:"What does 'facilitate' mean?",opts:["Obstruct","Make easier or help bring about","Take over","Evaluate"],a:1,explanation:"To facilitate means to make a process easier or help it happen."},
+    {q:"'Viable' means:",opts:["Impossible","Risky","Capable of working successfully","Expensive"],a:2,explanation:"Viable means capable of working successfully; feasible."},
+  ];
+
+  // Extended reading comprehension passages (for E dim)
+  const readingCompQs = [
+    {passage:"Studies show that companies with diverse leadership teams outperform their peers by 35%. Diversity encompasses gender, ethnicity, background and experience. Critics argue that diversity initiatives can lead to tokenism if not implemented thoughtfully.",q:"According to the passage, diverse leadership teams:",opts:["Always underperform","Outperform peers by 35%","Have no effect on performance","Perform worse in some sectors"],a:1,explanation:"The passage states diverse teams outperform peers by 35%."},
+    {passage:"Studies show that companies with diverse leadership teams outperform their peers by 35%. Diversity encompasses gender, ethnicity, background and experience. Critics argue that diversity initiatives can lead to tokenism if not implemented thoughtfully.",q:"Critics of diversity initiatives are concerned about:",opts:["Performance drops","Tokenism if not thoughtfully implemented","Increased costs","Lack of metrics"],a:1,explanation:"The passage explicitly mentions critics' concern about tokenism."},
+    {passage:"Automation is reshaping the global labour market. Routine tasks are increasingly performed by machines, raising concerns about job displacement. However, economists note that past technological revolutions created more jobs than they destroyed. Reskilling programmes are seen as critical for managing the transition.",q:"Economists suggest that past technological revolutions:",opts:["Permanently reduced employment","Created more jobs than they destroyed","Had no effect on employment","Only benefited skilled workers"],a:1,explanation:"Economists noted past revolutions created more jobs than destroyed."},
+    {passage:"Automation is reshaping the global labour market. Routine tasks are increasingly performed by machines, raising concerns about job displacement. However, economists note that past technological revolutions created more jobs than they destroyed. Reskilling programmes are seen as critical for managing the transition.",q:"What is described as critical for managing the automation transition?",opts:["Banning automation","Reskilling programmes","Shorter working hours","Higher minimum wages"],a:1,explanation:"The passage identifies reskilling programmes as critical."},
+    {passage:"The circular economy aims to eliminate waste by keeping materials in use as long as possible. Unlike the traditional linear model of take-make-dispose, it emphasises repair, reuse, and recycling. Several major corporations have pledged to adopt circular principles by 2030.",q:"The circular economy differs from the traditional model by:",opts:["Producing more waste","Emphasising repair, reuse and recycling","Focusing only on recycling","Eliminating all manufacturing"],a:1,explanation:"The circular economy emphasises repair, reuse and recycling vs the linear take-make-dispose."},
+  ];
+
   const bank = [];
   let idx = 0;
 
-  // 4 Reading (A - Pronunciation)
-  for(let i=0;i<4;i++) {
+  // A: Read Aloud – 3 questions (Pronunciation)
+  for(let i=0;i<3;i++) {
     bank.push({id:idx++,type:'reading',dim:'A',
       text:`Read this sentence aloud:\n"${readingTexts[(i+seed)%readingTexts.length]}"`,
       target:readingTexts[(i+seed)%readingTexts.length],points:10});
   }
-  // 4 Retelling (B - Fluency)
+
+  // B: Repeat (Retelling) – 4 questions (Fluency)
   const retellingTexts = [
     "I enjoy learning new languages because it opens doors to different cultures.",
     "Technology makes it easier for people to stay connected with family and friends.",
@@ -635,48 +669,38 @@ function generateQuestions(seed=0) {
       speech:retellingTexts[(i+seed)%retellingTexts.length],
       text:`Listen and repeat the following sentence.`,points:10});
   }
-  // 4 Listening (C)
-  for(let i=0;i<4;i++) {
+
+  // C: Listen & Answer – 3 questions (Listening)
+  for(let i=0;i<3;i++) {
     const q=listeningQs[(i+seed)%listeningQs.length];
     bank.push({id:idx++,type:'listening',dim:'C',...q,points:10});
   }
-  // 4 Vocabulary (D)
-  for(let i=0;i<4;i++) {
-    const q=vocabQs[(i*2+seed)%vocabQs.length];
+
+  // D: Vocabulary – 10 questions
+  for(let i=0;i<10;i++) {
+    const q=vocabQsAll[(i+seed*3)%vocabQsAll.length];
     bank.push({id:idx++,type:'vocab',dim:'D',...q,points:10});
   }
-  // 4 Situation (E - Comprehension)
-  for(let i=0;i<4;i++) {
-    const q=situationQs[(i+seed)%situationQs.length];
-    bank.push({id:idx++,type:'situation',dim:'E',...q,points:10});
+
+  // E: Reading Comprehension – 5 questions
+  for(let i=0;i<5;i++) {
+    const q=readingCompQs[(i+seed)%readingCompQs.length];
+    bank.push({id:idx++,type:'reading_comp',dim:'E',
+      passage:q.passage,text:q.q,opts:q.opts,a:q.a,explanation:q.explanation,points:10});
   }
-  // 4 Speech (F - Grammar)
+
+  // F: Speak Freely – 3 questions (Grammar/Speaking)
   const speechTopics = [
     "Talk about your daily routine",
     "Describe your ideal job",
     "Explain why English is important",
     "Describe a memorable experience"
   ];
-  for(let i=0;i<4;i++) {
+  for(let i=0;i<3;i++) {
     bank.push({id:idx++,type:'speech',dim:'F',
       text:`Speak for 30-60 seconds on the topic:\n"${speechTopics[(i+seed)%speechTopics.length]}"`,
       topic:speechTopics[(i+seed)%speechTopics.length],points:10});
   }
-
-  // Mix in real SHL questions
-  const realByType = {};
-  REAL_SHL_QUESTIONS.forEach(q => {
-    const key = q.type === 'numerical' ? 'vocab' : q.type;
-    if(!realByType[key]) realByType[key] = [];
-    realByType[key].push(q);
-  });
-  bank.splice(0, bank.length, ...bank.map((q,i) => {
-    const pool = realByType[q.type] || realByType[q.dim];
-    if(pool && pool.length > 0) {
-      return pool[i % pool.length];
-    }
-    return q;
-  }));
 
   return bank;
 }
@@ -923,12 +947,16 @@ function renderQuestion() {
 }
 
 function buildQuestionHTML(q, savedAns) {
-  const typeLabel = {reading:'🗣️ Reading Aloud',retelling:'🔁 Retelling',vocab:'📖 Vocabulary',situation:'💼 Situation',listening:'🎧 Listening',speech:'🎤 Speech',verbal:'📝 Verbal Reasoning',numerical:'🔢 Numerical Reasoning'};
+  const typeLabel = {reading:'🗣️ Read Aloud',retelling:'🔁 Repeat',vocab:'📖 Vocabulary',situation:'💼 Situation',listening:'🎧 Listen & Answer',speech:'🎤 Speak Freely',reading_comp:'📚 Reading Comp',verbal:'📝 Verbal Reasoning',numerical:'🔢 Numerical Reasoning'};
   const dimLabel = DIMS[DIM_KEYS.indexOf(q.dim)] || q.dim || '';
-  // Build question text HTML: support passage+statement, stem, or legacy q.text/q.q
+  // Build question text HTML: support passage+statement/question, stem, or legacy q.text/q.q
   let questionTextHtml = '';
   if(q.passage) {
-    questionTextHtml = `<div style="background:#e8f4fd;border-left:4px solid #1b3a6b;border-radius:8px;padding:1rem 1.2rem;margin-bottom:1.2rem;font-size:.92rem;line-height:1.7;color:#1a2b4a;">${q.passage}</div><div class="question-text" style="font-weight:600;color:#1b3a6b;">Statement: ${q.statement||''}</div>`;
+    // reading_comp uses passage + q.text as question; verbal uses passage + q.statement
+    const questionPart = q.type === 'reading_comp'
+      ? `<div class="question-text" style="font-weight:600;color:#1b3a6b;margin-top:.2rem;">❓ ${q.text||''}</div>`
+      : `<div class="question-text" style="font-weight:600;color:#1b3a6b;">Statement: ${q.statement||''}</div>`;
+    questionTextHtml = `<div style="background:#e8f4fd;border-left:4px solid #1b3a6b;border-radius:8px;padding:1rem 1.2rem;margin-bottom:1.2rem;font-size:.92rem;line-height:1.7;color:#1a2b4a;">${q.passage}</div>${questionPart}`;
   } else if(q.stem) {
     questionTextHtml = `<div class="question-text">${q.stem}</div>`;
   } else {
@@ -946,7 +974,7 @@ function buildQuestionHTML(q, savedAns) {
     html += `<div class="question-audio-btn"><button class="btn btn-outline btn-sm" onclick="speakText('${q.speech.replace(/'/g,"\\'")}')">▶ Listen First</button></div>`;
   }
 
-  if(optionsArr && ['vocab','situation','listening','verbal','numerical'].includes(q.type)) {
+  if(optionsArr && ['vocab','situation','listening','verbal','numerical','reading_comp'].includes(q.type)) {
     html += `<div class="options" id="optionsContainer">`;
     optionsArr.forEach((opt,i)=>{
       let cls='option';
@@ -1523,22 +1551,32 @@ function renderExamQuestion() {
 }
 
 function buildExamQuestionHTML(q,savedAns) {
-  const typeLabel={reading:'🗣️ Reading',retelling:'🔁 Retelling',vocab:'📖 Vocabulary',situation:'💼 Situation',listening:'🎧 Listening',speech:'🎤 Speech'};
+  const typeLabel={reading:'🗣️ Read Aloud',retelling:'🔁 Repeat',vocab:'📖 Vocabulary',situation:'💼 Situation',listening:'🎧 Listen & Answer',speech:'🎤 Speak Freely',reading_comp:'📚 Reading Comp',verbal:'📝 Verbal',numerical:'🔢 Numerical'};
   const dimLabel=DIMS[DIM_KEYS.indexOf(q.dim)];
+  // Passage support for reading_comp and verbal
+  let passageHtml = '';
+  if(q.passage) {
+    const questionPart = q.type==='reading_comp'
+      ? `<div class="question-text" style="font-weight:600;color:#1b3a6b;">❓ ${q.text||''}</div>`
+      : `<div class="question-text" style="font-weight:600;color:#1b3a6b;">Statement: ${q.statement||''}</div>`;
+    passageHtml = `<div style="background:#e8f4fd;border-left:4px solid #1b3a6b;border-radius:8px;padding:1rem 1.2rem;margin-bottom:1.2rem;font-size:.92rem;line-height:1.7;color:#1a2b4a;">${q.passage}</div>${questionPart}`;
+  }
+  const mainText = q.passage ? passageHtml : `<div class="question-text">${q.stem||q.text||q.q||''}</div>`;
   let html=`<div class="question-card">
     <div class="question-type-badge"><span class="badge badge-blue">${typeLabel[q.type]||q.type}</span> <span class="badge badge-yellow" style="margin-left:.3rem">${dimLabel}</span></div>
-    <div class="question-text">${q.text||q.q||''}</div>`;
+    ${mainText}`;
   if(q.type==='listening'&&q.speech) html+=`<div class="question-audio-btn"><button class="btn btn-outline btn-sm" onclick="speakText('${q.speech.replace(/'/g,"\\'")}')">▶ Play Audio</button></div>`;
   if(q.type==='retelling'&&q.speech) html+=`<div class="question-audio-btn"><button class="btn btn-outline btn-sm" onclick="speakText('${q.speech.replace(/'/g,"\\'")}')">▶ Listen First</button></div>`;
-  if(['vocab','situation','listening'].includes(q.type)&&q.opts) {
+  const optArr = q.options || q.opts || null;
+  if(['vocab','situation','listening','reading_comp','verbal','numerical'].includes(q.type)&&optArr) {
     html+=`<div class="options" id="examOpts">`;
-    q.opts.forEach((opt,i)=>{
+    optArr.forEach((opt,i)=>{
       let cls='option';
       if(savedAns!==null){if(i===q.a)cls+=' correct';else if(savedAns.chosen===i)cls+=' wrong';}
       html+=`<div class="${cls}" onclick="selectExamOption(${i})" data-idx="${i}"><div class="option-letter">${'ABCD'[i]}</div><div>${opt}</div></div>`;
     });
     html+=`</div>`;
-    if(savedAns!==null){const ok=savedAns.chosen===q.a;html+=`<div style="margin-top:1rem;padding:.8rem;background:${ok?'rgba(16,185,129,.1)':'rgba(239,68,68,.1)'};border-radius:8px;font-size:.9rem;color:${ok?'#34d399':'#fca5a5'}">${ok?'✅ Correct!':'❌ Incorrect. Correct: '+q.opts[q.a]}</div>`;}
+    if(savedAns!==null){const ok=savedAns.chosen===q.a;const exp=q.explanation?'<br><small style="opacity:.75">'+q.explanation+'</small>':'';html+=`<div style="margin-top:1rem;padding:.8rem;background:${ok?'rgba(16,185,129,.1)':'rgba(239,68,68,.1)'};border-radius:8px;font-size:.9rem;color:${ok?'#34d399':'#fca5a5'}">${ok?'✅ Correct!'+exp:'❌ Incorrect. Correct: '+optArr[q.a]+exp}</div>`;}
   }
   if(['reading','retelling','speech'].includes(q.type)) {
     html+=`<div class="recording-area" id="recordingArea">
