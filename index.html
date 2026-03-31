@@ -1575,34 +1575,107 @@ function initStudy() {
 }
 
 function startDayPractice(day) {
-  // Toggle day expansion inline instead of navigating to Practice
   const plan=S.get('shl_plan',[]);
   const d=plan.find(p=>p.day===day);
   if(!d) return;
-  // Build modal-style overlay on study page
+
+  // Pick day-specific content
+  const speakDrills = SPEAKING_DRILLS.filter(s=>typeof s==='string');
+  const drillText = speakDrills.length ? speakDrills[day % speakDrills.length] : 'Speak freely about your work today.';
+  const vocabWord = VOCAB_BANK[day % VOCAB_BANK.length];
+  const pronDrill = PRONUNCIATION_DRILLS[day % PRONUNCIATION_DRILLS.length];
+  const readPassage = READING_PASSAGES[day % READING_PASSAGES.length];
+
+  // Pick a mini quiz question — cycle through verbal/reading_comp/situation/vocab types
+  const quizPool = REAL_SHL_QUESTIONS.filter(q=>['verbal','situation','vocab','reading_comp'].includes(q.type));
+  const quizQ = quizPool[day % quizPool.length];
+  const quizOpts = (quizQ.options || quizQ.opts || []);
+
   const overlay=document.createElement('div');
-  overlay.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:999;display:flex;align-items:center;justify-content:center;';
-  const themeVocab=VOCAB_BANK.filter((_,i)=>i%20===day%20);
-  const drill=SPEAKING_DRILLS[day % (typeof SPEAKING_DRILLS[0]==='string' ? SPEAKING_DRILLS.filter(s=>typeof s==='string').length : SPEAKING_DRILLS.length)];
-  const drillText=typeof drill==='string'?drill:'Speak freely about your work today.';
-  overlay.innerHTML=`<div style="background:var(--card);border-radius:16px;padding:2rem;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;position:relative">
-    <div style="font-size:1.1rem;font-weight:700;margin-bottom:1rem">📅 Day ${day}: ${d.theme}</div>
-    <div style="font-size:.85rem;color:var(--text2);margin-bottom:1.2rem">Click any task to start. Progress saves automatically.</div>
-    <div style="display:flex;flex-direction:column;gap:.7rem">
-      <div style="padding:.9rem 1rem;background:rgba(99,102,241,.1);border-radius:10px;cursor:pointer" onclick="showPage('practice');this.closest('div[style*=fixed]').remove()">
-        📖 <strong>Vocabulary</strong> — Learn 10 business words <span style="float:right;color:var(--text2)">→</span>
+  overlay.id='dayOverlay';
+  overlay.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.65);z-index:999;display:flex;align-items:flex-start;justify-content:center;padding-top:4vh;overflow-y:auto;';
+
+  overlay.innerHTML=`<div style="background:var(--card);border-radius:16px;padding:1.8rem;max-width:560px;width:92%;margin-bottom:2rem;position:relative">
+    <button style="position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--text2);font-size:1.3rem;cursor:pointer;line-height:1" onclick="document.getElementById('dayOverlay')?.remove()">✕</button>
+    <div style="font-size:1.15rem;font-weight:700;margin-bottom:.3rem">📅 Day ${day}: ${d.theme}</div>
+    <div style="font-size:.8rem;color:var(--text2);margin-bottom:1.2rem">5 learning activities · Click each to expand</div>
+
+    <!-- ① Vocabulary -->
+    <details style="margin-bottom:.7rem;border:1px solid var(--border);border-radius:10px;overflow:hidden">
+      <summary style="padding:.85rem 1rem;cursor:pointer;font-weight:600;background:rgba(99,102,241,.08);list-style:none;display:flex;align-items:center;gap:.5rem">
+        <span>📖</span><span>Vocabulary</span><span style="margin-left:auto;font-size:.8rem;color:var(--text2)">Word of the Day</span>
+      </summary>
+      <div style="padding:1rem;border-top:1px solid var(--border)">
+        <div style="font-size:1.4rem;font-weight:800;color:var(--accent)">${vocabWord.word}</div>
+        <div style="font-size:.85rem;color:var(--text2);margin:.2rem 0">${vocabWord.phonetic}</div>
+        <div style="font-size:.95rem;margin:.6rem 0;line-height:1.6">${vocabWord.meaning}</div>
+        <div style="font-size:.85rem;font-style:italic;color:var(--text2);padding:.5rem .8rem;background:var(--bg2);border-radius:6px">"${vocabWord.example}"</div>
+        ${vocabWord.tip?`<div style="margin-top:.5rem;font-size:.8rem;color:#fcd34d">💡 ${vocabWord.tip}</div>`:''}
+        <div style="margin-top:.7rem"><button onclick="speakText('${vocabWord.word.replace(/'/g,"\\'")}');speakText('${vocabWord.example.replace(/'/g,"\\'")}',0.85)" style="background:rgba(0,166,81,.12);border:1px solid rgba(0,166,81,.3);color:var(--accent);font-size:.8rem;padding:.3rem .9rem;border-radius:20px;cursor:pointer">🔊 Listen</button></div>
       </div>
-      <div style="padding:.9rem 1rem;background:rgba(16,185,129,.1);border-radius:10px;cursor:pointer" onclick="showPage('practice');document.querySelectorAll('.tab-item')[2]?.click();this.closest('div[style*=fixed]').remove()">
-        🎤 <strong>Speaking Drill</strong> — "${drillText.slice(0,60)}..." <span style="float:right;color:var(--text2)">→</span>
+    </details>
+
+    <!-- ② Pronunciation -->
+    <details style="margin-bottom:.7rem;border:1px solid var(--border);border-radius:10px;overflow:hidden">
+      <summary style="padding:.85rem 1rem;cursor:pointer;font-weight:600;background:rgba(139,92,246,.08);list-style:none;display:flex;align-items:center;gap:.5rem">
+        <span>🗣️</span><span>Pronunciation Drill</span><span style="margin-left:auto;font-size:.8rem;color:var(--text2)">Read aloud</span>
+      </summary>
+      <div style="padding:1rem;border-top:1px solid var(--border)">
+        <div style="font-size:.95rem;line-height:1.7;padding:.7rem .9rem;background:rgba(37,99,235,.06);border-left:3px solid #2563eb;border-radius:0 8px 8px 0;margin-bottom:.6rem">"${pronDrill.text}"</div>
+        <div style="font-size:.8rem;color:#fcd34d;margin-bottom:.7rem">📌 ${pronDrill.focus}</div>
+        <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+          <button onclick="speakText('${pronDrill.text.replace(/'/g,"\\'")}' )" style="background:none;border:1px solid var(--border);color:var(--text);font-size:.8rem;padding:.3rem .8rem;border-radius:6px;cursor:pointer">🔊 Model</button>
+          <button onclick="speakText('${pronDrill.text.replace(/'/g,"\\'")}',0.75)" style="background:none;border:1px solid var(--border);color:var(--text);font-size:.8rem;padding:.3rem .8rem;border-radius:6px;cursor:pointer">🐢 Slow</button>
+        </div>
       </div>
-      <div style="padding:.9rem 1rem;background:rgba(245,158,11,.1);border-radius:10px;cursor:pointer" onclick="showPage('practice');document.querySelectorAll('.tab-item')[3]?.click();this.closest('div[style*=fixed]').remove()">
-        🎧 <strong>Listening</strong> — Practice comprehension <span style="float:right;color:var(--text2)">→</span>
+    </details>
+
+    <!-- ③ Speaking Drill -->
+    <details style="margin-bottom:.7rem;border:1px solid var(--border);border-radius:10px;overflow:hidden">
+      <summary style="padding:.85rem 1rem;cursor:pointer;font-weight:600;background:rgba(16,185,129,.08);list-style:none;display:flex;align-items:center;gap:.5rem">
+        <span>🎤</span><span>Speaking Drill</span><span style="margin-left:auto;font-size:.8rem;color:var(--text2)">60 sec response</span>
+      </summary>
+      <div style="padding:1rem;border-top:1px solid var(--border)">
+        <div style="font-size:.92rem;line-height:1.6;margin-bottom:.8rem">${drillText}</div>
+        <div style="font-size:.8rem;color:var(--text2);margin-bottom:.7rem">💡 Aim for 50–70 words. Use connectors: <em>firstly, however, therefore, in addition</em></div>
+        <button onclick="showPage('practice');closeDrawer();document.getElementById('dayOverlay')?.remove();" style="background:linear-gradient(135deg,#00a651,#059669);border:none;color:#fff;font-size:.85rem;padding:.45rem 1.1rem;border-radius:8px;cursor:pointer">Open Speaking Practice →</button>
       </div>
-    </div>
-    ${d.completed?'<span style="color:#34d399;font-size:.9rem">✅ Day completed!</span>':`<button class="btn btn-primary" style="width:100%;margin-top:1.2rem" onclick="markDayComplete(${day});this.closest('div[style*=fixed]').remove()">✅ Mark Day Complete</button>`}
-    <button style="position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--text2);font-size:1.2rem;cursor:pointer" onclick="this.closest('div[style*=fixed]').remove()">✕</button>
+    </details>
+
+    <!-- ④ Reading Comprehension -->
+    <details style="margin-bottom:.7rem;border:1px solid var(--border);border-radius:10px;overflow:hidden">
+      <summary style="padding:.85rem 1rem;cursor:pointer;font-weight:600;background:rgba(59,130,246,.08);list-style:none;display:flex;align-items:center;gap:.5rem">
+        <span>📚</span><span>Reading Comprehension</span><span style="margin-left:auto;font-size:.8rem;color:var(--text2)">${readPassage.title}</span>
+      </summary>
+      <div style="padding:1rem;border-top:1px solid var(--border)">
+        <div style="background:#e8f4fd;border-left:4px solid #1b3a6b;border-radius:6px;padding:.8rem 1rem;margin-bottom:.8rem;font-size:.88rem;line-height:1.65;color:#1a2b4a">${readPassage.text.length>400?readPassage.text.slice(0,400)+'...<em style="color:#2563eb"> (full passage in Practice tab)</em>':readPassage.text}</div>
+        <div style="font-weight:600;font-size:.9rem;margin-bottom:.5rem">❓ ${readPassage.q}</div>
+        <input type="text" id="dayReadAns${day}" placeholder="Type your answer..." style="width:100%;padding:.5rem .7rem;border:1px solid var(--border);border-radius:6px;background:var(--bg2);color:var(--text);font-size:.88rem;box-sizing:border-box;margin-bottom:.5rem">
+        <button onclick="(function(){const a=document.getElementById('dayReadAns${day}').value.toLowerCase();const correct='${readPassage.a.replace(/'/g,"\\'").replace(/"/g,'&quot;')}';const ok=a.length>5&&(a.split(' ').some(w=>w.length>4&&correct.toLowerCase().includes(w)));const fb=document.getElementById('dayReadFb${day}');fb.style.color=ok?'#34d399':'#fca5a5';fb.innerHTML=ok?'✅ Good answer!':'💡 Suggested: '+correct;})()" style="background:linear-gradient(135deg,#2563eb,#1d4ed8);border:none;color:#fff;font-size:.82rem;padding:.4rem 1rem;border-radius:6px;cursor:pointer">Check Answer</button>
+        <div id="dayReadFb${day}" style="margin-top:.5rem;font-size:.85rem"></div>
+      </div>
+    </details>
+
+    <!-- ⑤ Mini Quiz -->
+    <details style="margin-bottom:1rem;border:1px solid var(--border);border-radius:10px;overflow:hidden">
+      <summary style="padding:.85rem 1rem;cursor:pointer;font-weight:600;background:rgba(245,158,11,.08);list-style:none;display:flex;align-items:center;gap:.5rem">
+        <span>📝</span><span>Mini Quiz</span><span style="margin-left:auto;font-size:.8rem;color:var(--text2)">${quizQ.type} question</span>
+      </summary>
+      <div style="padding:1rem;border-top:1px solid var(--border)" id="miniQuizBox${day}">
+        ${quizQ.passage||quizQ.text?`<div style="background:rgba(245,158,11,.08);border-left:3px solid #f59e0b;padding:.7rem .9rem;border-radius:0 8px 8px 0;font-size:.88rem;line-height:1.65;margin-bottom:.8rem;color:var(--text)">${(quizQ.passage||quizQ.text||'').slice(0,350)}</div>`:''}
+        <div style="font-size:.92rem;font-weight:600;margin-bottom:.7rem">${quizQ.statement||quizQ.stem||quizQ.q||''}</div>
+        ${quizOpts.map((opt,i)=>`<button onclick="(function(btn,idx){const correct=${quizQ.a};const box=document.getElementById('miniQuizBox${day}');box.querySelectorAll('.quiz-opt').forEach(b=>{b.disabled=true;b.style.opacity='.6'});btn.style.background=idx===correct?'rgba(52,211,153,.2)':'rgba(252,165,165,.2)';btn.style.border='1px solid '+(idx===correct?'#34d399':'#f87171');btn.style.opacity='1';const fb=document.getElementById('miniQuizFb${day}');fb.innerHTML=idx===correct?'✅ Correct! '+('${(quizQ.explanation||'').replace(/'/g,"\\'").replace(/"/g,'&quot;')}'):'❌ Incorrect. Correct answer: <b>'+['A','B','C','D'][correct]+'</b>. ${(quizQ.explanation||'').replace(/'/g,"\\'").replace(/"/g,'&quot;')}';fb.style.color=idx===correct?'#34d399':'#fca5a5';})(this,${i})" class="quiz-opt" style="display:block;width:100%;text-align:left;padding:.55rem .9rem;margin-bottom:.4rem;background:var(--bg2);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:.88rem;color:var(--text);transition:all .2s"><span style="font-weight:700;margin-right:.5rem">${['A','B','C','D'][i]}.</span>${opt}</button>`).join('')}
+        <div id="miniQuizFb${day}" style="margin-top:.5rem;font-size:.85rem;line-height:1.5"></div>
+      </div>
+    </details>
+
+    ${d.completed
+      ? '<div style="text-align:center;color:#34d399;font-size:.9rem;padding:.5rem">✅ Day completed!</div>'
+      : `<button class="btn btn-primary" style="width:100%;margin-top:.3rem" onclick="markDayComplete(${day});document.getElementById('dayOverlay')?.remove()">✅ Mark Day Complete</button>`}
   </div>`;
+
   document.body.appendChild(overlay);
+  overlay.addEventListener('click', e=>{ if(e.target===overlay) overlay.remove(); });
 }
 
 function markDayComplete(day) {
