@@ -6,40 +6,40 @@
 <title>SHL English Assessment System</title>
 <style>
 :root {
-  --bg: #07111f;
-  --bg2: #0f1628;
-  --bg3: #1a2140;
-  --accent: #2563eb;
-  --accent2: #3b82f6;
-  --accent3: #60a5fa;
-  --success: #10b981;
-  --warning: #f59e0b;
-  --danger: #ef4444;
-  --text: #f0f6ff;
-  --text2: #a8c4e0;
-  --border: #1e3a5f;
-  --card: #1e3a5f;
-  --glow: 0 0 20px rgba(37,99,235,0.3);
+  --bg: #f5f7fa;
+  --bg2: #ffffff;
+  --bg3: #eef1f6;
+  --card: #ffffff;
+  --border: #dde3ec;
+  --text: #1a2b4a;
+  --text2: #5a6a80;
+  --accent: #00a651;
+  --accent2: #1b3a6b;
+  --accent3: #f59e0b;
+  --success: #00a651;
+  --danger: #e53935;
+  --warn: #fb8c00;
+  --glow: 0 0 20px rgba(0,166,81,0.2);
 }
 * { margin:0; padding:0; box-sizing:border-box; }
-body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui,sans-serif; min-height:100vh; overflow-x:hidden; }
+body { background:var(--bg); color:#1a2b4a; font-family:'Segoe UI',system-ui,sans-serif; min-height:100vh; overflow-x:hidden; }
 
 /* PAGES */
 .page { display:none; min-height:100vh; }
 .page.active { display:flex; flex-direction:column; }
 
 /* NAV */
-.nav { background:var(--bg2); border-bottom:1px solid var(--border); padding:0 2rem; display:flex; align-items:center; justify-content:space-between; height:60px; position:sticky; top:0; z-index:100; }
-.nav-logo { font-size:1.2rem; font-weight:700; color:var(--accent2); letter-spacing:2px; }
+.nav { background:#1b3a6b !important; border-bottom:1px solid var(--border); padding:0 2rem; display:flex; align-items:center; justify-content:space-between; height:60px; position:sticky; top:0; z-index:100; }
+.nav-logo { font-size:1.2rem; font-weight:700; color:#ffffff; letter-spacing:2px; }
 .nav-logo span { color:var(--text2); font-weight:400; font-size:.9rem; }
 .nav-links { display:flex; gap:.5rem; }
-.nav-btn { background:none; border:none; color:var(--text2); padding:.4rem .8rem; border-radius:6px; cursor:pointer; font-size:.85rem; transition:all .2s; }
-.nav-btn:hover, .nav-btn.active { background:var(--bg3); color:var(--accent3); }
+.nav-btn { background:none; border:none; color:rgba(255,255,255,0.8); padding:.4rem .8rem; border-radius:6px; cursor:pointer; font-size:.85rem; transition:all .2s; }
+.nav-btn:hover, .nav-btn.active { color:#ffffff; background:rgba(255,255,255,0.15); }
 .nav-user { font-size:.85rem; color:var(--text2); }
 
 /* BUTTONS */
 .btn { padding:.7rem 1.8rem; border:none; border-radius:8px; cursor:pointer; font-size:.95rem; font-weight:600; transition:all .2s; display:inline-flex; align-items:center; gap:.5rem; }
-.btn-primary { background:var(--accent); color:#fff; }
+.btn-primary { background:#00a651; color:#fff; }
 .btn-primary:hover { background:var(--accent2); transform:translateY(-1px); box-shadow:var(--glow); }
 .btn-outline { background:transparent; border:1px solid var(--border); color:var(--text); }
 .btn-outline:hover { border-color:var(--accent2); color:var(--accent2); }
@@ -77,7 +77,7 @@ body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui
 .pulse { animation:pulse 2s infinite; }
 
 /* ===== PAGE 1: LOGIN ===== */
-#page-login { position:fixed; top:0; left:0; width:100%; height:100%; z-index:9999; align-items:center; justify-content:center; background:radial-gradient(ellipse at center, #0f1e3d 0%, var(--bg) 70%); overflow:hidden; }
+#page-login { position:fixed; top:0; left:0; width:100%; height:100%; z-index:9999; align-items:center; justify-content:center; background:radial-gradient(ellipse at center, #0f1e3d 0%, #1b3a6b 70%); overflow:hidden; }
 .login-box { width:100%; max-width:420px; text-align:center; padding:2rem; animation:fadeIn .5s ease forwards; }
 .login-logo { font-size:2.5rem; font-weight:800; color:#fff; margin-bottom:.3rem; }
 .login-logo .accent { color:var(--accent3); }
@@ -106,17 +106,17 @@ body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui
 #page-test { flex-direction:column; }
 .test-header { background:var(--bg2); border-bottom:1px solid var(--border); padding:1rem 2rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; }
 .test-meta { display:flex; gap:1.5rem; align-items:center; flex-wrap:wrap; }
-.test-timer { font-size:1.4rem; font-weight:700; color:var(--accent3); font-variant-numeric:tabular-nums; }
+.test-timer { font-size:1.4rem; font-weight:700; color:#00a651; font-variant-numeric:tabular-nums; }
 .test-progress-text { color:var(--text2); font-size:.9rem; }
 .test-body { flex:1; display:flex; align-items:center; justify-content:center; padding:2rem; }
-.question-card { background:#1e3a5f; border:2px solid #2563eb; border-radius:16px; padding:2rem; max-width:700px; width:100%; opacity:1; transform:translateY(0); box-shadow:0 0 24px rgba(37,99,235,0.25); transition:opacity .3s ease, transform .3s ease; }
+.question-card { background:#ffffff; border:2px solid #00a651; border-radius:16px; padding:2rem; max-width:700px; width:100%; opacity:1; transform:translateY(0); box-shadow:0 4px 16px rgba(0,166,81,0.12); color:#1a2b4a; transition:opacity .3s ease, transform .3s ease; }
 .question-type-badge { margin-bottom:1rem; }
 .question-text { font-size:1.1rem; font-weight:500; margin-bottom:1.5rem; line-height:1.6; }
 .question-audio-btn { margin-bottom:1.5rem; }
 .options { display:flex; flex-direction:column; gap:.7rem; }
-.option { background:#162540; border:2px solid #2d5a8e; border-radius:10px; padding:1rem 1.2rem; cursor:pointer; transition:all .2s; display:flex; align-items:center; gap:1rem; }
-.option:hover { border-color:var(--accent2); background:var(--bg3); }
-.option.selected { border-color:var(--accent); background:rgba(37,99,235,.1); }
+.option { background:#f8fafc; border:2px solid #dde3ec; color:#1a2b4a; border-radius:10px; padding:1rem 1.2rem; cursor:pointer; transition:all .2s; display:flex; align-items:center; gap:1rem; }
+.option:hover { border-color:#00a651; background:#f0faf5; color:#1a2b4a; }
+.option.selected { border-color:#00a651; background:rgba(0,166,81,0.08); color:#00a651; }
 .option.correct { border-color:var(--success); background:rgba(16,185,129,.1); }
 .option.wrong { border-color:var(--danger); background:rgba(239,68,68,.1); }
 .option-letter { width:28px; height:28px; border-radius:50%; background:var(--bg3); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:.8rem; font-weight:700; flex-shrink:0; }
@@ -509,6 +509,24 @@ const CEFR_DESCS = {
   B2:'Upper-Intermediate – can interact with a degree of fluency and spontaneity.',
   C1:'Advanced – can use language flexibly and effectively for social and academic purposes.'
 };
+
+const REAL_SHL_QUESTIONS = [
+  {type:'verbal',dim:'vocab',passage:"In recent years, governments have turned to shock tactics to fight smoking. The latest anti-smoking campaign showed tumors growing from a cigarette. This advert was contentious. It became a viral sensation, attracting attention. The government estimates 300,000 people will attempt to quit. Health experts claim the campaign is ineffective in targeting all smokers.",statement:"The advert was controversial.",options:["True","False","Cannot Say"],a:0,explanation:"'Contentious' means controversial — directly stated in the passage."},
+  {type:'verbal',dim:'vocab',passage:"In recent years, governments have turned to shock tactics to fight smoking. The latest anti-smoking campaign showed tumors growing from a cigarette. This advert was contentious. It became a viral sensation, attracting attention. The government estimates 300,000 people will attempt to quit. Health experts claim the campaign is ineffective in targeting all smokers.",statement:"Health experts support the anti-smoking campaign.",options:["True","False","Cannot Say"],a:1,explanation:"False — health experts claim the campaign is ineffective."},
+  {type:'verbal',dim:'vocab',passage:"Remote work has become increasingly common since the pandemic. Many companies adopted hybrid models. Studies show remote workers report higher job satisfaction but face challenges: isolation and difficulty separating work from personal life. Productivity outcomes are mixed — some sectors improved, others declined.",statement:"All remote workers experience reduced productivity.",options:["True","False","Cannot Say"],a:1,explanation:"False — productivity outcomes are mixed, not universally reduced."},
+  {type:'verbal',dim:'vocab',passage:"Remote work has become increasingly common since the pandemic. Many companies adopted hybrid models. Studies show remote workers report higher job satisfaction but face challenges: isolation and difficulty separating work from personal life. Productivity outcomes are mixed — some sectors improved, others declined.",statement:"Remote work can lead to feelings of isolation.",options:["True","False","Cannot Say"],a:0,explanation:"True — the passage explicitly mentions isolation as a challenge."},
+  {type:'verbal',dim:'vocab',passage:"The EV market has seen explosive growth. Government subsidies and improving battery technology have made EVs more accessible. Concerns remain about charging infrastructure in rural areas. Critics note that if electricity comes from coal plants, the carbon footprint may not be significantly reduced.",statement:"Electric vehicles always have a lower carbon footprint than petrol cars.",options:["True","False","Cannot Say"],a:1,explanation:"False — carbon footprint may not be reduced if electricity comes from coal."},
+  {type:'verbal',dim:'vocab',passage:"The EV market has seen explosive growth. Government subsidies and improving battery technology have made EVs more accessible. Concerns remain about charging infrastructure in rural areas. Critics note that if electricity comes from coal plants, the carbon footprint may not be significantly reduced.",statement:"Charging infrastructure is a concern in some areas.",options:["True","False","Cannot Say"],a:0,explanation:"True — the passage mentions concerns about rural charging infrastructure."},
+  {type:'verbal',dim:'vocab',passage:"AI is transforming healthcare. Machine learning can detect cancers from medical images with accuracy comparable to radiologists. However, adoption faces regulatory hurdles, data privacy concerns, and resistance from professionals fearing job displacement. Some hospitals report significant time savings.",statement:"All hospitals have adopted AI diagnostic tools.",options:["True","False","Cannot Say"],a:1,explanation:"False — only 'some hospitals' have integrated AI, not all."},
+  {type:'verbal',dim:'vocab',passage:"AI is transforming healthcare. Machine learning can detect cancers from medical images with accuracy comparable to radiologists. However, adoption faces regulatory hurdles, data privacy concerns, and resistance from professionals fearing job displacement. Some hospitals report significant time savings.",statement:"Medical professionals have concerns about AI replacing their roles.",options:["True","False","Cannot Say"],a:0,explanation:"True — resistance from professionals fearing job displacement is explicitly mentioned."},
+  {type:'situation',dim:'situation',stem:"You are on a high-priority project with a tight deadline. A colleague asks for your help with an unrelated non-urgent task. What is the most effective response?",options:["Immediately stop your work to help fully","Explain your situation and offer to help after your task","Ignore the request entirely","Ask your manager to reassign the colleague's task"],a:1,explanation:"Balancing your priorities while being supportive is the most professional approach."},
+  {type:'situation',dim:'situation',stem:"During a team meeting, you spot a significant flaw in the proposed plan that no one else has noticed. What should you do?",options:["Say nothing to avoid conflict","Tell the manager privately after the meeting","Politely raise the concern with a suggested solution during the meeting","Send an anonymous message to the team"],a:2,explanation:"Raising concerns constructively during the meeting addresses the issue promptly and transparently."},
+  {type:'situation',dim:'situation',stem:"You discover a colleague has been taking credit for your work in reports to senior management. How do you handle it?",options:["Confront them aggressively in front of others","Report immediately to HR","Have a private, professional conversation with the colleague","Do nothing to avoid conflict"],a:2,explanation:"A direct but private professional conversation is the most appropriate first step."},
+  {type:'numerical',dim:'vocab',stem:"A company's revenue was \u00a3240,000 in Q1 and increased by 15% in Q2. What was Q2 revenue?",options:["\u00a3264,000","\u00a3276,000","\u00a3252,000","\u00a3288,000"],a:1,explanation:"\u00a3240,000 \u00d7 1.15 = \u00a3276,000"},
+  {type:'numerical',dim:'vocab',stem:"In a survey of 400 employees, 35% prefer remote work. How many employees is that?",options:["120","140","150","160"],a:1,explanation:"400 \u00d7 0.35 = 140"},
+  {type:'numerical',dim:'vocab',stem:"A product costs \u00a380 and sells for \u00a3120. What is the percentage profit margin (on cost)?",options:["33%","40%","50%","25%"],a:2,explanation:"Profit = \u00a340. Margin on cost = 40/80 \u00d7 100 = 50%"},
+  {type:'numerical',dim:'vocab',stem:"Sales grew from 1,200 units to 1,560 units. What is the percentage increase?",options:["25%","30%","35%","40%"],a:1,explanation:"(1560-1200)/1200 \u00d7 100 = 360/1200 \u00d7 100 = 30%"},
+];
 const DIMS = ['Pronunciation','Fluency','Listening','Vocabulary','Comprehension','Grammar'];
 const DIM_KEYS = ['A','B','C','D','E','F'];
 const DIM_WEIGHTS = [2/9,2/9,2/9,1/9,1/9,1/9];
@@ -603,6 +621,21 @@ function generateQuestions(seed=0) {
       text:`Speak for 30-60 seconds on the topic:\n"${speechTopics[(i+seed)%speechTopics.length]}"`,
       topic:speechTopics[(i+seed)%speechTopics.length],points:10});
   }
+
+  // Mix in real SHL questions
+  const realByType = {};
+  REAL_SHL_QUESTIONS.forEach(q => {
+    const key = q.type === 'numerical' ? 'vocab' : q.type;
+    if(!realByType[key]) realByType[key] = [];
+    realByType[key].push(q);
+  });
+  bank.splice(0, bank.length, ...bank.map((q,i) => {
+    const pool = realByType[q.type] || realByType[q.dim];
+    if(pool && pool.length > 0) {
+      return pool[i % pool.length];
+    }
+    return q;
+  }));
 
   return bank;
 }
@@ -777,11 +810,21 @@ function renderQuestion() {
 }
 
 function buildQuestionHTML(q, savedAns) {
-  const typeLabel = {reading:'🗣️ Reading Aloud',retelling:'🔁 Retelling',vocab:'📖 Vocabulary',situation:'💼 Situation',listening:'🎧 Listening',speech:'🎤 Speech'};
-  const dimLabel = DIMS[DIM_KEYS.indexOf(q.dim)];
+  const typeLabel = {reading:'🗣️ Reading Aloud',retelling:'🔁 Retelling',vocab:'📖 Vocabulary',situation:'💼 Situation',listening:'🎧 Listening',speech:'🎤 Speech',verbal:'📝 Verbal Reasoning',numerical:'🔢 Numerical Reasoning'};
+  const dimLabel = DIMS[DIM_KEYS.indexOf(q.dim)] || q.dim || '';
+  // Build question text HTML: support passage+statement, stem, or legacy q.text/q.q
+  let questionTextHtml = '';
+  if(q.passage) {
+    questionTextHtml = `<div style="background:#e8f4fd;border-left:4px solid #1b3a6b;border-radius:8px;padding:1rem 1.2rem;margin-bottom:1.2rem;font-size:.92rem;line-height:1.7;color:#1a2b4a;">${q.passage}</div><div class="question-text" style="font-weight:600;color:#1b3a6b;">Statement: ${q.statement||''}</div>`;
+  } else if(q.stem) {
+    questionTextHtml = `<div class="question-text">${q.stem}</div>`;
+  } else {
+    questionTextHtml = `<div class="question-text">${q.text||q.q||''}</div>`;
+  }
+  const optionsArr = q.options || q.opts || null;
   let html = `<div class="question-card">
     <div class="question-type-badge"><span class="badge badge-blue">${typeLabel[q.type]||q.type}</span> <span class="badge badge-yellow" style="margin-left:.3rem">${dimLabel}</span></div>
-    <div class="question-text">${q.text||q.q||''}</div>`;
+    ${questionTextHtml}`;
 
   if(q.type==='listening' && q.speech) {
     html += `<div class="question-audio-btn"><button class="btn btn-outline btn-sm" onclick="speakText('${q.speech.replace(/'/g,"\\'")}')">▶ Play Audio</button></div>`;
@@ -790,9 +833,9 @@ function buildQuestionHTML(q, savedAns) {
     html += `<div class="question-audio-btn"><button class="btn btn-outline btn-sm" onclick="speakText('${q.speech.replace(/'/g,"\\'")}')">▶ Listen First</button></div>`;
   }
 
-  if(['vocab','situation','listening'].includes(q.type) && q.opts) {
+  if(optionsArr && ['vocab','situation','listening','verbal','numerical'].includes(q.type)) {
     html += `<div class="options" id="optionsContainer">`;
-    q.opts.forEach((opt,i)=>{
+    optionsArr.forEach((opt,i)=>{
       let cls='option';
       if(savedAns!==null) {
         if(i===q.a) cls+=' correct';
@@ -806,7 +849,8 @@ function buildQuestionHTML(q, savedAns) {
     html += `</div>`;
     if(savedAns!==null) {
       const ok = savedAns.chosen===q.a;
-      html += `<div style="margin-top:1rem;padding:.8rem;background:${ok?'rgba(16,185,129,.1)':'rgba(239,68,68,.1)'};border-radius:8px;font-size:.9rem;color:${ok?'#34d399':'#fca5a5'}">${ok?'✅ Correct!':'❌ Incorrect. Correct answer: '+q.opts[q.a]}</div>`;
+      const exp = q.explanation ? `<br><small style="opacity:.75">${q.explanation}</small>` : '';
+      html += `<div style="margin-top:1rem;padding:.8rem;background:${ok?'rgba(0,166,81,0.1)':'rgba(229,57,53,0.1)'};border-radius:8px;font-size:.9rem;color:${ok?'#00a651':'#e53935'}">${ok?'✅ Correct!'+exp:'❌ Incorrect. Correct answer: '+optionsArr[q.a]+exp}</div>`;
     }
   }
 
