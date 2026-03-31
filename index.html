@@ -103,7 +103,7 @@ body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui
 #page-home { flex-direction:column; }
 .home-hero {
   background: linear-gradient(135deg,#1b3a6b 0%,#2d5a9e 50%,#1a5c47 100%);
-  padding: 3.5rem 2rem 2.5rem;
+  padding: 4.5rem 2rem 3.5rem;
   text-align: center;
   border-bottom: 1px solid var(--border);
   color: #fff;
@@ -126,10 +126,15 @@ body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui
   pointer-events: none; z-index: 0; white-space: nowrap; overflow: hidden;
 }
 .home-hero > * { position: relative; z-index: 1; }
-.home-hero h1 { font-size: 2rem; font-weight: 800; margin-bottom: .6rem; }
+.home-hero h1 { font-size: 2.4rem; font-weight: 900; margin-bottom: 1rem; letter-spacing:-.01em; }
 .home-hero h1 .accent { color: #00a651; }
-.home-hero p { color: rgba(255,255,255,0.82); max-width: 500px; margin: 0 auto 2rem; font-size: .95rem; }
+.home-hero p { color: rgba(255,255,255,0.82); max-width: 520px; margin: 0 auto; font-size: 1rem; line-height:1.7; }
 .home-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: .85rem; padding: 1.5rem 2rem; max-width: 1400px; margin: 0 auto; width: 100%; }
+
+/* Language toggle buttons */
+.lang-btn { font-size:.82rem; padding:.32rem 1rem; border-radius:20px; background:#f0f4f8; color:#374151; border:1.5px solid #d1d5db; font-weight:600; cursor:pointer; transition:all .18s; line-height:1.4; }
+.lang-btn:hover { border-color:#00a651; color:#00a651; }
+.lang-btn.lang-btn-active { background:#00a651; color:#fff !important; border-color:#00a651; }
 
 /* ===== POSTER SECTION ===== */
 .home-poster-section { width:100%; background:var(--bg); padding-bottom:3rem; }
@@ -452,13 +457,13 @@ canvas.chart { width:100%; border-radius:8px; }
   <div class="home-hero fade-in">
     <h1>Master English with <span class="accent">AI-Powered</span> Assessment</h1>
     <p>Six-dimensional CEFR evaluation, personalized study plans, and comprehensive practice.</p>
-    <button class="btn btn-primary" onclick="startTest('assessment')" style="font-size:1rem;padding:.85rem 2.8rem;margin-top:.5rem;">Start Assessment →</button>
-    <div class="home-stats" id="homeStats"></div>
+    <button class="btn btn-primary" onclick="startTest('assessment')" style="font-size:1.05rem;padding:.9rem 3rem;margin-top:2rem;letter-spacing:.03em;">Start Assessment →</button>
+    <div class="home-stats" id="homeStats" style="margin-top:1.2rem"></div>
   </div>
   <div style="text-align:center;padding:.6rem 1.5rem;display:flex;align-items:center;justify-content:center;gap:.5rem;flex-wrap:wrap;background:var(--bg2);border-bottom:1px solid var(--border)">
     <span style="color:var(--text2);font-size:.82rem;font-weight:600">🎙️ Speech Language:</span>
-    <button id="langBtnUS" onclick="setSpeechLang('en-US')" class="nav-btn" style="font-size:.8rem;padding:.3rem .9rem;border-radius:20px;background:#00a651;color:#fff;border:none;font-weight:600">🇺🇸 US English</button>
-    <button id="langBtnGB" onclick="setSpeechLang('en-GB')" class="nav-btn" style="font-size:.8rem;padding:.3rem .9rem;border-radius:20px;background:var(--bg);color:var(--text);border:1px solid var(--border);font-weight:500">🇬🇧 UK English</button>
+    <button id="langBtnUS" onclick="setSpeechLang('en-US')" class="lang-btn lang-btn-active">🇺🇸 US English</button>
+    <button id="langBtnGB" onclick="setSpeechLang('en-GB')" class="lang-btn">🇬🇧 UK English</button>
   </div>
   <div class="home-grid">
 
@@ -3196,18 +3201,8 @@ function setSpeechLang(lang) {
   state.speechLang = lang;
   const us = document.getElementById('langBtnUS');
   const gb = document.getElementById('langBtnGB');
-  if(us) {
-    us.style.background = lang==='en-US' ? '#00a651' : 'var(--bg)';
-    us.style.color      = lang==='en-US' ? '#fff'    : 'var(--text)';
-    us.style.border     = lang==='en-US' ? 'none'    : '1px solid var(--border)';
-    us.style.fontWeight = lang==='en-US' ? '600'     : '500';
-  }
-  if(gb) {
-    gb.style.background = lang==='en-GB' ? '#00a651' : 'var(--bg)';
-    gb.style.color      = lang==='en-GB' ? '#fff'    : 'var(--text)';
-    gb.style.border     = lang==='en-GB' ? 'none'    : '1px solid var(--border)';
-    gb.style.fontWeight = lang==='en-GB' ? '600'     : '500';
-  }
+  if(us) { us.classList.toggle('lang-btn-active', lang==='en-US'); }
+  if(gb) { gb.classList.toggle('lang-btn-active', lang==='en-GB'); }
   window._ttsLang = lang;
 }
 </script>
