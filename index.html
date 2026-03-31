@@ -109,7 +109,7 @@ body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui
 .test-timer { font-size:1.4rem; font-weight:700; color:var(--accent3); font-variant-numeric:tabular-nums; }
 .test-progress-text { color:var(--text2); font-size:.9rem; }
 .test-body { flex:1; display:flex; align-items:center; justify-content:center; padding:2rem; }
-.question-card { background:#1e3a5f; border:2px solid #2563eb; border-radius:16px; padding:2rem; max-width:700px; width:100%; animation:fadeIn .3s ease forwards; box-shadow:0 0 24px rgba(37,99,235,0.25); }
+.question-card { background:#1e3a5f; border:2px solid #2563eb; border-radius:16px; padding:2rem; max-width:700px; width:100%; opacity:1; transform:translateY(0); box-shadow:0 0 24px rgba(37,99,235,0.25); transition:opacity .3s ease, transform .3s ease; }
 .question-type-badge { margin-bottom:1rem; }
 .question-text { font-size:1.1rem; font-weight:500; margin-bottom:1.5rem; line-height:1.6; }
 .question-audio-btn { margin-bottom:1.5rem; }
@@ -772,14 +772,14 @@ function renderQuestion() {
   const container = document.getElementById('questionContainer');
   container.innerHTML = buildQuestionHTML(q, state.testAnswers[state.testCurrent]);
   const _card = container.querySelector('.question-card');
-  if(_card){ _card.style.animation='none'; void _card.offsetWidth; _card.style.animation='fadeIn .3s ease forwards'; }
+  if(_card){ _card.style.opacity='0'; _card.style.transform='translateY(12px)'; void _card.offsetWidth; requestAnimationFrame(()=>{ _card.style.opacity='1'; _card.style.transform='translateY(0)'; }); }
   attachQuestionEvents(q);
 }
 
 function buildQuestionHTML(q, savedAns) {
   const typeLabel = {reading:'🗣️ Reading Aloud',retelling:'🔁 Retelling',vocab:'📖 Vocabulary',situation:'💼 Situation',listening:'🎧 Listening',speech:'🎤 Speech'};
   const dimLabel = DIMS[DIM_KEYS.indexOf(q.dim)];
-  let html = `<div class="question-card" style="opacity:1">
+  let html = `<div class="question-card">
     <div class="question-type-badge"><span class="badge badge-blue">${typeLabel[q.type]||q.type}</span> <span class="badge badge-yellow" style="margin-left:.3rem">${dimLabel}</span></div>
     <div class="question-text">${q.text||q.q||''}</div>`;
 
@@ -1358,13 +1358,13 @@ function renderExamQuestion() {
   const savedAns=state.examAnswers[state.examCurrent];
   container.innerHTML=buildExamQuestionHTML(q,savedAns);
   const _ec = container.querySelector('.question-card');
-  if(_ec){ _ec.style.animation='none'; void _ec.offsetWidth; _ec.style.animation='fadeIn .3s ease forwards'; }
+  if(_ec){ _ec.style.opacity='0'; _ec.style.transform='translateY(12px)'; void _ec.offsetWidth; requestAnimationFrame(()=>{ _ec.style.opacity='1'; _ec.style.transform='translateY(0)'; }); }
 }
 
 function buildExamQuestionHTML(q,savedAns) {
   const typeLabel={reading:'🗣️ Reading',retelling:'🔁 Retelling',vocab:'📖 Vocabulary',situation:'💼 Situation',listening:'🎧 Listening',speech:'🎤 Speech'};
   const dimLabel=DIMS[DIM_KEYS.indexOf(q.dim)];
-  let html=`<div class="question-card" style="opacity:1">
+  let html=`<div class="question-card">
     <div class="question-type-badge"><span class="badge badge-blue">${typeLabel[q.type]||q.type}</span> <span class="badge badge-yellow" style="margin-left:.3rem">${dimLabel}</span></div>
     <div class="question-text">${q.text||q.q||''}</div>`;
   if(q.type==='listening'&&q.speech) html+=`<div class="question-audio-btn"><button class="btn btn-outline btn-sm" onclick="speakText('${q.speech.replace(/'/g,"\\'")}')">▶ Play Audio</button></div>`;
