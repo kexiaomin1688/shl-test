@@ -130,6 +130,60 @@ body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui
 .home-hero h1 .accent { color: #00a651; }
 .home-hero p { color: rgba(255,255,255,0.82); max-width: 500px; margin: 0 auto 2rem; font-size: .95rem; }
 .home-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: .85rem; padding: 1.5rem 2rem; max-width: 1400px; margin: 0 auto; width: 100%; }
+
+/* ===== POSTER SECTION ===== */
+.home-poster-section { width:100%; background:var(--bg); padding-bottom:3rem; }
+
+/* Banner */
+.poster-banner { background:linear-gradient(135deg,#0f2042 0%,#1a3a6b 40%,#0d4f38 100%); padding:3.5rem 2rem 3rem; position:relative; overflow:hidden; }
+.poster-banner::before { content:'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z'; position:absolute; inset:0; font-size:1.1rem; font-weight:700; line-height:2.2; letter-spacing:.18rem; word-spacing:.5rem; color:rgba(255,255,255,0.04); pointer-events:none; overflow:hidden; padding:1rem; }
+.poster-banner-inner { max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:2rem; flex-wrap:wrap; }
+.poster-banner-text { flex:1; min-width:280px; position:relative; z-index:1; }
+.poster-eyebrow { font-size:.7rem; font-weight:800; letter-spacing:.18em; color:rgba(255,255,255,.5); margin-bottom:.5rem; }
+.poster-title { font-size:2.4rem; font-weight:900; color:#fff; line-height:1.2; margin:0 0 .8rem; }
+.poster-subtitle { font-size:.98rem; color:rgba(255,255,255,.75); line-height:1.7; max-width:460px; margin:0; }
+.poster-banner-visual { flex:0 0 280px; height:200px; position:relative; z-index:1; }
+.poster-world { font-size:6rem; text-align:center; line-height:1; filter:drop-shadow(0 0 30px rgba(0,166,81,.4)); animation:floatBob 4s ease-in-out infinite; }
+@keyframes floatBob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+.poster-float-word { position:absolute; font-size:.75rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:rgba(255,255,255,.25); }
+
+/* Feature cards */
+.poster-features { display:grid; grid-template-columns:repeat(3,1fr); gap:1.2rem; max-width:1200px; margin:0 auto; padding:2.5rem 2rem 0; }
+.poster-feat-card { background:var(--card); border:1.5px solid var(--border); border-radius:var(--radius-lg); padding:1.8rem 1.6rem; border-top:4px solid var(--feat-color); transition:transform .2s,box-shadow .2s; }
+.poster-feat-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); }
+.feat-icon { font-size:2rem; margin-bottom:.8rem; }
+.feat-title { font-size:1rem; font-weight:800; color:var(--feat-color); margin-bottom:.6rem; text-transform:uppercase; letter-spacing:.05em; }
+.feat-desc { font-size:.88rem; color:var(--text2); line-height:1.7; margin-bottom:1rem; }
+.feat-levels { display:flex; gap:.35rem; flex-wrap:wrap; }
+.feat-levels span { padding:.22rem .55rem; border-radius:20px; font-size:.72rem; font-weight:700; color:#fff; letter-spacing:.04em; }
+.feat-stat-row { display:flex; gap:1.2rem; }
+.feat-stat { display:flex; flex-direction:column; align-items:center; }
+.feat-stat span { font-size:1.8rem; font-weight:900; color:var(--feat-color); line-height:1.1; }
+.feat-stat { font-size:.72rem; color:var(--text2); font-weight:600; text-transform:uppercase; letter-spacing:.04em; }
+.feat-tags { display:flex; gap:.4rem; flex-wrap:wrap; }
+.feat-tags span { background:rgba(245,158,11,.12); color:#d97706; border:1px solid rgba(245,158,11,.3); border-radius:20px; font-size:.72rem; font-weight:600; padding:.22rem .65rem; }
+
+/* Quote strip */
+.poster-quote-strip { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; max-width:1200px; margin:2rem auto 0; padding:0 2rem; }
+.poster-quote { background:linear-gradient(135deg,rgba(0,166,81,.06),rgba(37,99,235,.06)); border:1px solid var(--border); border-radius:var(--radius-lg); padding:1.4rem 1.5rem; position:relative; }
+.quote-mark { font-size:3rem; line-height:.8; color:rgba(0,166,81,.3); font-family:Georgia,serif; display:block; margin-bottom:.4rem; }
+.poster-quote > span:nth-child(2) { font-size:.88rem; color:var(--text); line-height:1.65; font-style:italic; }
+.quote-author { display:block; margin-top:.7rem; font-size:.75rem; font-weight:700; color:var(--text2); letter-spacing:.04em; }
+
+/* Daily tip bar */
+.poster-tip-bar { max-width:1200px; margin:1.5rem auto 0; padding:0 2rem; }
+.poster-tip-bar { background:linear-gradient(90deg,rgba(0,166,81,.1),rgba(37,99,235,.1)); border:1px solid rgba(0,166,81,.2); border-radius:var(--radius-lg); padding:1rem 1.5rem; display:flex; align-items:center; gap:.8rem; font-size:.9rem; color:var(--text); line-height:1.6; }
+
+@media(max-width:900px){
+  .poster-features,.poster-quote-strip { grid-template-columns:1fr; }
+  .poster-title { font-size:1.8rem; }
+  .poster-banner-visual { display:none; }
+}
+@media(max-width:600px){
+  .poster-banner { padding:2rem 1rem; }
+  .poster-features,.poster-quote-strip { padding:0 .8rem; }
+  .poster-tip-bar { margin:1rem .8rem 0; }
+}
 .home-card { background:var(--card); border:1.5px solid var(--border); border-radius:var(--radius-lg); padding:1.5rem 1.4rem; cursor:pointer; transition:all .2s ease; box-shadow:var(--shadow-sm); }
 .home-card:hover { border-color:#00a651; box-shadow:var(--shadow-md); transform:translateY(-3px); }
 .home-card:active { transform:translateY(-1px); }
@@ -439,6 +493,92 @@ canvas.chart { width:100%; border-radius:8px; }
       <div style="margin-top:1rem"><span class="badge badge-red" id="wrongCountBadge">0 Items</span></div>
     </div>
   </div>
+
+  <!-- ===== LEARNING POSTER SECTION ===== -->
+  <div class="home-poster-section">
+    <!-- Banner: Why English Matters -->
+    <div class="poster-banner">
+      <div class="poster-banner-inner">
+        <div class="poster-banner-text">
+          <div class="poster-eyebrow">YOUR JOURNEY STARTS HERE</div>
+          <h2 class="poster-title">English Opens <span style="color:#fcd34d">Every Door</span></h2>
+          <p class="poster-subtitle">From BD pitches to executive reports — strong English is your competitive edge at Keeta.</p>
+          <button class="btn btn-primary" onclick="startTest('assessment')" style="margin-top:1.2rem;font-size:.95rem;padding:.7rem 2rem">Take Free Assessment →</button>
+        </div>
+        <div class="poster-banner-visual">
+          <div class="poster-world">🌍</div>
+          <div class="poster-float-word" style="top:8%;left:10%">fluency</div>
+          <div class="poster-float-word" style="top:22%;right:8%">confidence</div>
+          <div class="poster-float-word" style="top:50%;left:5%">clarity</div>
+          <div class="poster-float-word" style="bottom:18%;right:12%">impact</div>
+          <div class="poster-float-word" style="bottom:5%;left:20%">growth</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 Feature Cards -->
+    <div class="poster-features">
+      <div class="poster-feat-card" style="--feat-color:#10b981">
+        <div class="feat-icon">🎯</div>
+        <div class="feat-title">CEFR Certified</div>
+        <div class="feat-desc">Six-dimensional scoring aligned to international CEFR standards — from A1 beginner to C2 mastery.</div>
+        <div class="feat-levels">
+          <span style="background:#dc2626">A1</span>
+          <span style="background:#ea580c">A2</span>
+          <span style="background:#d97706">B1</span>
+          <span style="background:#65a30d">B2</span>
+          <span style="background:#059669">C1</span>
+          <span style="background:#0284c7">C2</span>
+        </div>
+      </div>
+      <div class="poster-feat-card" style="--feat-color:#6366f1">
+        <div class="feat-icon">🧠</div>
+        <div class="feat-title">AI-Powered Practice</div>
+        <div class="feat-desc">Real-time speech recognition scores your speaking. Record, compare, and improve pronunciation every day.</div>
+        <div class="feat-stat-row">
+          <div class="feat-stat"><span>400</span>Vocab Words</div>
+          <div class="feat-stat"><span>20</span>Study Days</div>
+          <div class="feat-stat"><span>5</span>Mock Exams</div>
+        </div>
+      </div>
+      <div class="poster-feat-card" style="--feat-color:#f59e0b">
+        <div class="feat-icon">📈</div>
+        <div class="feat-title">Business English Focus</div>
+        <div class="feat-desc">Built for Keeta &amp; Meituan professionals — every word, drill and passage is from your real work context.</div>
+        <div class="feat-tags">
+          <span>BD Pitches</span><span>Data Reports</span><span>Partner Emails</span>
+          <span>Cross-cultural</span><span>Presentations</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quote strip -->
+    <div class="poster-quote-strip">
+      <div class="poster-quote">
+        <span class="quote-mark">"</span>
+        <span>The limits of my language are the limits of my world.</span>
+        <span class="quote-author">— Ludwig Wittgenstein</span>
+      </div>
+      <div class="poster-quote">
+        <span class="quote-mark">"</span>
+        <span>One language sets you in a corridor for life. Two languages open every door along the way.</span>
+        <span class="quote-author">— Frank Smith</span>
+      </div>
+      <div class="poster-quote">
+        <span class="quote-mark">"</span>
+        <span>Learning another language is not just learning different words — it is learning another way to think.</span>
+        <span class="quote-author">— Flora Lewis</span>
+      </div>
+    </div>
+
+    <!-- Daily tip -->
+    <div class="poster-tip-bar">
+      <span style="font-size:1.1rem">💡</span>
+      <span id="dailyTipText">Loading today's tip...</span>
+    </div>
+  </div>
+  <!-- ===== END POSTER SECTION ===== -->
+
 </div>
 
 <!-- PAGE 3: TEST -->
@@ -1070,6 +1210,29 @@ function initHome() {
     stats.innerHTML = `<div class="stat-chip">👋 Welcome, ${state.currentUser}! No tests yet.</div>`;
   }
   document.getElementById('wrongCountBadge').textContent = wrong.filter(w=>!w.mastered).length + ' Items';
+  // Daily tip
+  const DAILY_TIPS = [
+    "📖 <strong>Tip:</strong> When you learn a new word, say it aloud 3 times in a sentence. Speaking activates a different memory pathway than reading.",
+    "🎯 <strong>Tip:</strong> Don't translate — think directly in English. Start with simple sentences about your daily work tasks.",
+    "🔊 <strong>Tip:</strong> Mimic native speakers' rhythm and stress, not just pronunciation. English is stress-timed, unlike Mandarin.",
+    "✍️ <strong>Tip:</strong> Write your weekly report in English first, then review. Writing forces clearer thinking.",
+    "📱 <strong>Tip:</strong> Change one app's language to English — even just your calendar or notes app. Immersion adds up.",
+    "🤝 <strong>Tip:</strong> In BD meetings, lead with context before your ask: <em>'I wanted to share our Q2 data, and then propose something...'</em>",
+    "💬 <strong>Tip:</strong> Use filler phrases to buy thinking time: <em>'That's a great point — let me think about that for a moment.'</em>",
+    "🧩 <strong>Tip:</strong> Learn words in chunks, not alone. Instead of 'leverage', learn 'leverage your network', 'leverage data', 'leverage relationships'.",
+    "⏱️ <strong>Tip:</strong> Spend 10 minutes reading an English article every morning. Harvard Business Review and Bloomberg Businessweek are great for business context.",
+    "🎤 <strong>Tip:</strong> Record yourself speaking for 60 seconds, then listen back. You'll catch filler words (um, uh, like) you didn't notice.",
+    "📊 <strong>Tip:</strong> When presenting data in English, use this structure: <em>Number → Context → Implication</em>. E.g. '30% growth — driven by retention — suggesting our incentive programme is working.'",
+    "🌍 <strong>Tip:</strong> In cross-cultural emails, start with rapport before business: a brief sentence about the weather, a holiday, or a shared context goes a long way.",
+    "🔁 <strong>Tip:</strong> Review 5 words from yesterday's session before learning new ones. Spaced repetition beats marathon cramming.",
+    "📝 <strong>Tip:</strong> Use the STAR format in spoken English: <em>Situation → Task → Action → Result</em>. It makes answers in meetings and interviews instantly clearer.",
+    "💡 <strong>Tip:</strong> Don't fear mistakes — fear silence. Partners and colleagues respect effort. Perfection is the enemy of fluency.",
+  ];
+  const tipEl = document.getElementById('dailyTipText');
+  if(tipEl) {
+    const dayIdx = Math.floor(Date.now()/86400000) % DAILY_TIPS.length;
+    tipEl.innerHTML = DAILY_TIPS[dayIdx];
+  }
 }
 
 // ============================================================
