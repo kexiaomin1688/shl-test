@@ -42,6 +42,10 @@ body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui
 .nav-btn { background:none; border:none; color:rgba(255,255,255,0.8); padding:.4rem .8rem; border-radius:6px; cursor:pointer; font-size:.85rem; transition:all .2s; }
 .nav-btn:hover, .nav-btn.active { color:#ffffff; background:rgba(255,255,255,0.15); }
 .nav-user { font-size:.85rem; color:var(--text2); }
+.nav-hamburger { display:none; background:none; border:none; color:#fff; font-size:1.4rem; cursor:pointer; padding:.3rem .5rem; line-height:1; }
+.nav-drawer { display:none; position:fixed; top:56px; left:0; right:0; background:rgba(18,38,72,0.98); backdrop-filter:blur(12px); z-index:99; flex-direction:column; padding:.5rem; border-bottom:1px solid rgba(255,255,255,0.1); box-shadow:0 8px 24px rgba(0,0,0,0.3); }
+.nav-drawer.open { display:flex; }
+.nav-drawer .nav-btn { text-align:left; padding:.7rem 1rem; font-size:.95rem; border-radius:8px; }
 
 /* BUTTONS */
 .btn { padding:.65rem 1.6rem; border:none; border-radius:var(--radius-sm); cursor:pointer; font-size:.9rem; font-weight:600; transition:all .18s ease; display:inline-flex; align-items:center; justify-content:center; gap:.5rem; letter-spacing:.01em; }
@@ -255,7 +259,8 @@ canvas.chart { width:100%; border-radius:8px; }
   /* Nav */
   .nav { padding:0 1rem; height:52px; }
   .nav-logo { font-size:.95rem; letter-spacing:2px; }
-  .nav-links { gap:.2rem; }
+  .nav-links { display:none !important; }
+  .nav-hamburger { display:block !important; }
   .nav-btn { font-size:.75rem; padding:.3rem .5rem; }
   /* Hero */
   .home-hero { padding:1.5rem 1rem; }
@@ -343,24 +348,39 @@ canvas.chart { width:100%; border-radius:8px; }
 <div class="page" id="page-home">
   <nav class="nav">
     <div class="nav-logo">SHL<span>.TEST</span></div>
-    <div class="nav-links">
-      <button class="nav-btn" onclick="showPage('home')">Home</button>
-      <button class="nav-btn" onclick="startTest('assessment')">Assessment</button>
-      <button class="nav-btn" onclick="showPage('study')">Study Plan</button>
-      <button class="nav-btn" onclick="showPage('practice')">Practice</button>
-      <button class="nav-btn" onclick="showPage('exam')">Mock Exam</button>
-      <button class="nav-btn" onclick="showPage('stats')">Statistics</button>
+    <div class="nav-links" id="navLinks">
+      <button class="nav-btn" onclick="showPage('home');closeDrawer()">Home</button>
+      <button class="nav-btn" onclick="startTest('assessment');closeDrawer()">Assessment</button>
+      <button class="nav-btn" onclick="showPage('study');closeDrawer()">Study Plan</button>
+      <button class="nav-btn" onclick="showPage('practice');closeDrawer()">Practice</button>
+      <button class="nav-btn" onclick="showPage('exam');closeDrawer()">Mock Exam</button>
+      <button class="nav-btn" onclick="showPage('stats');closeDrawer()">Statistics</button>
     </div>
     <div style="display:flex;align-items:center;gap:.5rem">
       <span id="navUserName" style="color:var(--text2);font-size:.85rem"></span>
       <button class="nav-btn" onclick="switchUser()" style="font-size:.8rem;padding:.3rem .7rem;opacity:.7">Switch User</button>
+      <button class="nav-hamburger" id="navHamburger" onclick="toggleDrawer()" aria-label="Menu">☰</button>
     </div>
   </nav>
+  <div class="nav-drawer" id="navDrawer">
+    <button class="nav-btn" onclick="showPage('home');closeDrawer()">🏠 Home</button>
+    <button class="nav-btn" onclick="startTest('assessment');closeDrawer()">📝 Assessment</button>
+    <button class="nav-btn" onclick="showPage('study');closeDrawer()">📚 Study Plan</button>
+    <button class="nav-btn" onclick="showPage('practice');closeDrawer()">✏️ Practice</button>
+    <button class="nav-btn" onclick="showPage('exam');closeDrawer()">📝 Mock Exam</button>
+    <button class="nav-btn" onclick="showPage('stats');closeDrawer()">📊 Statistics</button>
+    <button class="nav-btn" onclick="switchUser();closeDrawer()" style="opacity:.7">👤 Switch User</button>
+  </div>
   <div class="home-hero fade-in">
     <h1>Master English with <span class="accent">AI-Powered</span> Assessment</h1>
     <p>Six-dimensional CEFR evaluation, personalized study plans, and comprehensive practice.</p>
     <button class="btn btn-primary" onclick="startTest('assessment')" style="font-size:1rem;padding:.8rem 2.5rem;">Start Assessment →</button>
     <div class="home-stats" id="homeStats"></div>
+  </div>
+  <div style="text-align:center;padding:.5rem 1.5rem 0;display:flex;align-items:center;justify-content:center;gap:.5rem;flex-wrap:wrap">
+    <span style="color:var(--text2);font-size:.85rem">🎙️ Speech Language:</span>
+    <button id="langBtnUS" onclick="setSpeechLang('en-US')" class="nav-btn" style="font-size:.8rem;padding:.3rem .9rem;border:1px solid var(--accent);border-radius:20px;background:rgba(0,166,81,0.15);color:var(--accent)">🇺🇸 US English</button>
+    <button id="langBtnGB" onclick="setSpeechLang('en-GB')" class="nav-btn" style="font-size:.8rem;padding:.3rem .9rem;border:1px solid var(--border);border-radius:20px">🇬🇧 UK English</button>
   </div>
   <div class="home-grid">
 
@@ -860,6 +880,7 @@ let state = {
   examAnswers: [],
   examCurrent: 0,
   examTimer: null,
+  speechLang: 'en-US',
   examTimeLeft: 2700,
   practiceTab: 'vocab',
   vocabIdx: 0,
@@ -1235,7 +1256,7 @@ function startRecording(type,target) {
   const SpeechRecognition = window.SpeechRecognition||window.webkitSpeechRecognition;
   if(SpeechRecognition) {
     const rec = new SpeechRecognition();
-    rec.lang='en-US'; rec.continuous=true; rec.interimResults=true;
+    rec.lang=state.speechLang; rec.continuous=true; rec.interimResults=true;
     state.speechRec=rec;
     rec.onresult=e=>{
       let transcript='';
@@ -1401,7 +1422,7 @@ function calcSimilarity(a,b) {
 
 function speakText(text, rate=0.9) {
   const u = new SpeechSynthesisUtterance(text);
-  u.lang='en-US'; u.rate=rate;
+  u.lang=state.speechLang; u.rate=rate;
   window.speechSynthesis.cancel();
   window.speechSynthesis.speak(u);
 }
@@ -1754,7 +1775,10 @@ function renderVocabTab(container) {
       <div class="vocab-phonetic">${v.phonetic}</div>
       <div class="vocab-meaning">
         <div style="font-size:1rem;line-height:1.6;color:var(--text)">${v.meaning}</div>
-        <div style="font-size:1.1rem;font-weight:600;color:#60a5fa;margin:.6rem 0">🇨🇳 ${v.chinese||''}</div>
+        <div style="margin:.6rem 0">
+          <button id="cnToggleBtn" onclick="event.stopPropagation();var d=document.getElementById('cnMeaning');var show=d.style.display==='none'||!d.style.display;d.style.display=show?'block':'none';this.textContent=show?'🙈 Hide Chinese':'🇨🇳 Show Chinese'" style="background:rgba(0,166,81,0.12);border:1px solid rgba(0,166,81,0.3);color:var(--accent);font-size:.8rem;padding:.3rem .9rem;border-radius:20px;cursor:pointer;transition:all .2s">🇨🇳 Show Chinese</button>
+          <div id="cnMeaning" style="display:none;margin-top:.5rem;font-size:.9rem;font-weight:600;color:#34d399;background:rgba(0,166,81,0.1);padding:.4rem .8rem;border-radius:8px">${v.chinese||'暂无中文翻译'}</div>
+        </div>
         <div style="color:var(--text2);font-size:.88rem;font-style:italic;margin-top:.4rem">"${v.example}"</div>
         ${tipHtml}
       </div>
@@ -1971,7 +1995,7 @@ function toggleExamRecord(type,target) {
     if(btn){btn.classList.add('recording');btn.textContent='⏹️';}
     if(status) status.textContent='Recording...';
     const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-    if(SR){const rec=new SR();rec.lang='en-US';rec.continuous=true;rec.interimResults=true;state.speechRec=rec;rec.onresult=e=>{let t='';for(let r of e.results)t+=r[0].transcript;const box=document.getElementById('speechResultBox');if(box){box.style.display='block';box.textContent='🎙️ '+t;}};rec.start();}
+    if(SR){const rec=new SR();rec.lang=state.speechLang;rec.continuous=true;rec.interimResults=true;state.speechRec=rec;rec.onresult=e=>{let t='';for(let r of e.results)t+=r[0].transcript;const box=document.getElementById('speechResultBox');if(box){box.style.display='block';box.textContent='🎙️ '+t;}};rec.start();}
     else setTimeout(()=>stopExamRecord(type,target),3000);
   } else {
     stopExamRecord(type,target);
@@ -2049,14 +2073,29 @@ function initStats() {
   `;
 
   // Score trend chart
-  drawLineChart('scoreChart', history.slice(-15).map((h,i)=>({x:i,y:h.total,label:new Date(h.date).toLocaleDateString()})), 'Score', '#3b82f6');
+  if(history.length >= 1) {
+    drawLineChart('scoreChart', history.slice(-15).map((h,i)=>({x:i,y:h.total,label:new Date(h.date).toLocaleDateString()})), 'Score', '#3b82f6');
+  } else {
+    const sc = document.getElementById('scoreChart');
+    if(sc) { const ctx=sc.getContext('2d'); sc.width=sc.offsetWidth||300; ctx.clearRect(0,0,sc.width,sc.height); ctx.fillStyle='rgba(59,130,246,0.12)'; ctx.fillRect(0,0,sc.width,sc.height); ctx.fillStyle='#6b7280'; ctx.font='14px sans-serif'; ctx.textAlign='center'; ctx.fillText('📊 Complete your first assessment to see score trends', sc.width/2, sc.height/2-8); ctx.font='12px sans-serif'; ctx.fillStyle='#9ca3af'; ctx.fillText('Your progress chart will appear here', sc.width/2, sc.height/2+14); }
+  }
 
   // CEFR chart
-  const cefrNums=history.slice(-15).map(h=>CEFR_LEVELS.indexOf(h.cefr)*25);
-  drawLineChart('cefrChart', cefrNums.map((y,i)=>({x:i,y,label:CEFR_LEVELS[Math.round(y/25)]})), 'CEFR', '#10b981', ['A1','A2','B1','B2','C1']);
+  if(history.length >= 1) {
+    const cefrNums=history.slice(-15).map(h=>CEFR_LEVELS.indexOf(h.cefr)*25);
+    drawLineChart('cefrChart', cefrNums.map((y,i)=>({x:i,y,label:CEFR_LEVELS[Math.round(y/25)]})), 'CEFR', '#10b981', ['A1','A2','B1','B2','C1']);
+  } else {
+    const cc = document.getElementById('cefrChart');
+    if(cc) { const ctx=cc.getContext('2d'); cc.width=cc.offsetWidth||300; ctx.clearRect(0,0,cc.width,cc.height); ctx.fillStyle='rgba(16,185,129,0.12)'; ctx.fillRect(0,0,cc.width,cc.height); ctx.fillStyle='#6b7280'; ctx.font='14px sans-serif'; ctx.textAlign='center'; ctx.fillText('🎯 Your CEFR level trend will appear here', cc.width/2, cc.height/2-8); ctx.font='12px sans-serif'; ctx.fillStyle='#9ca3af'; ctx.fillText('A1 → A2 → B1 → B2 → C1 progression', cc.width/2, cc.height/2+14); }
+  }
 
   // Dim chart
-  if(last) drawDimBars('dimChart', last.dims);
+  if(last) {
+    drawDimBars('dimChart', last.dims);
+  } else {
+    const dc = document.getElementById('dimChart');
+    if(dc) { const ctx=dc.getContext('2d'); dc.width=dc.offsetWidth||300; ctx.clearRect(0,0,dc.width,dc.height); ctx.fillStyle='rgba(245,158,11,0.12)'; ctx.fillRect(0,0,dc.width,dc.height); ctx.fillStyle='#6b7280'; ctx.font='14px sans-serif'; ctx.textAlign='center'; ctx.fillText('📈 Dimension breakdown available after first test', dc.width/2, dc.height/2); }
+  }
 
   // History list with wrong items highlighted
   const list=document.getElementById('historyList');
@@ -2172,6 +2211,30 @@ function closeModal(){document.getElementById('modalOverlay').classList.remove('
 // BOOT
 // ============================================================
 window.addEventListener('load', initApp);
+
+function toggleDrawer() {
+  const d = document.getElementById('navDrawer');
+  const h = document.getElementById('navHamburger');
+  if(!d) return;
+  d.classList.toggle('open');
+  if(h) h.textContent = d.classList.contains('open') ? '✕' : '☰';
+}
+function closeDrawer() {
+  const d = document.getElementById('navDrawer');
+  const h = document.getElementById('navHamburger');
+  if(d) d.classList.remove('open');
+  if(h) h.textContent = '☰';
+}
+
+function setSpeechLang(lang) {
+  state.speechLang = lang;
+  const us = document.getElementById('langBtnUS');
+  const gb = document.getElementById('langBtnGB');
+  if(us) { us.style.background = lang==='en-US'?'rgba(0,166,81,0.15)':''; us.style.border = lang==='en-US'?'1px solid var(--accent)':'1px solid var(--border)'; us.style.color = lang==='en-US'?'var(--accent)':''; }
+  if(gb) { gb.style.background = lang==='en-GB'?'rgba(0,166,81,0.15)':''; gb.style.border = lang==='en-GB'?'1px solid var(--accent)':'1px solid var(--border)'; gb.style.color = lang==='en-GB'?'var(--accent)':''; }
+  // Also set SpeechSynthesis lang
+  window._ttsLang = lang;
+}
 </script>
 </body>
 </html>
