@@ -1306,12 +1306,25 @@ function stopRecording(type,target) {
         const spokenWords = transcript.split(/\s+/).filter(w=>w.length>2);
         const keyMatches = spokenWords.filter(w=>targetWords.has(w)).length;
         const wc = spokenWords.length;
-        score = wc >= 12 ? (keyMatches >= 4 ? 10 : 8) : wc >= 7 ? 7 : 5;
+        // Proportional scoring based on key-word recall rate
+        const targetKeyCount = target ? target.toLowerCase().split(/\s+/).filter(w => w.length > 3).length : 6;
+        const recallRate = targetKeyCount > 0 ? keyMatches / targetKeyCount : 0;
+        if (wc < 5) {
+          score = 4;
+        } else if (wc < 10) {
+          score = recallRate >= 0.5 ? 6 : 5;
+        } else if (wc < 15) {
+          score = recallRate >= 0.7 ? 8 : recallRate >= 0.4 ? 7 : 6;
+        } else {
+          score = recallRate >= 0.7 ? 10 : recallRate >= 0.5 ? 9 : recallRate >= 0.3 ? 8 : 7;
+        }
 
         const fluencyTips = [];
-        if(wc < 7) fluencyTips.push('Try to repeat more of the sentence');
-        if(keyMatches < 3 && target) fluencyTips.push('Focus on key words like: ' + target.split(' ').filter(w=>w.length>4).slice(0,3).join(', '));
-        const tipHtml = fluencyTips.length ? fluencyTips.map(t=>`<div>💡 ${t}</div>`).join('') : '<div style="color:#34d399">✅ Good recall!</div>';
+        if(wc < 10) fluencyTips.push('Try to say the full sentence — aim for 15+ words');
+        if(recallRate < 0.5 && target) fluencyTips.push('Focus on key content words: ' + target.split(' ').filter(w=>w.length>3).slice(0,4).join(', '));
+        else if(recallRate < 0.7) fluencyTips.push('Good — try to include more key words for a higher score');
+        const recallPct = Math.round(recallRate * 100);
+        const tipHtml = fluencyTips.length ? fluencyTips.map(t=>`<div>💡 ${t}</div>`).join('') : `<div style="color:#34d399">✅ Good recall! ${recallPct}% key words matched.</div>`;
 
         analysisHtml = `
           <div style="margin-top:1rem;padding:1rem;background:rgba(30,58,95,.4);border:1px solid #2563eb;border-radius:10px;font-size:.88rem">
@@ -1331,11 +1344,17 @@ function stopRecording(type,target) {
         const wc = words.length;
         const structureWords = ['because','however','therefore','first','second','finally','also','but','so','although','meanwhile','furthermore'].filter(w=>transcript.includes(w));
         const longWords = words.filter(w=>w.length>=7).length;
-        score = Math.min(10, 3 + Math.floor(wc/8) + structureWords.length + (longWords>5?1:0));
+        // Tiered scoring: requires substantial speech for high scores
+        const wordScore = Math.min(4, Math.floor(wc / 15));           // max +4 at 60+ words
+        const connScore = Math.min(2, structureWords.length);          // max +2 with 2+ connectors
+        const vocabScore = (longWords >= 10 ? 2 : longWords >= 5 ? 1 : 0); // max +2
+        score = Math.min(10, 3 + wordScore + connScore + vocabScore);
 
         const feedback = [];
-        if(wc < 20) feedback.push('⚠️ Response too short — aim for at least 30-50 words');
-        else if(wc >= 50) feedback.push('✅ Good length! You spoke fluently.');
+        if(wc < 20) feedback.push('⚠️ Response too short — aim for at least 50-70 words');
+        else if(wc < 40) feedback.push('💡 Good start — try to expand to 50+ words for a higher score');
+        else if(wc >= 60) feedback.push('✅ Excellent length! Well-developed response.');
+        else feedback.push('✅ Good length — keep building vocabulary and connectors for a higher score.');
         if(structureWords.length === 0) feedback.push('💡 Use connectors (because, however, first...) to structure your ideas');
         else feedback.push(`✅ Good use of connectors: <em>${structureWords.join(', ')}</em>`);
         if(longWords < 3) feedback.push('💡 Try using more advanced vocabulary');
