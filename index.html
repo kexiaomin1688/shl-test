@@ -2643,6 +2643,25 @@ const READING_PASSAGES = [
   {title:"Cross-Cultural Communication",text:"Cultural differences significantly impact workplace communication. In high-context cultures like China and Japan, much of the meaning is conveyed implicitly through context, relationships, and nonverbal cues. In low-context cultures like the US and Germany, messages are expected to be explicit and direct. This difference can cause misunderstandings: a Chinese colleague saying that might be difficult often means no, while an American colleague would say no directly. Successful cross-cultural communicators develop cultural intelligence—the ability to recognize these patterns and adapt their communication style accordingly.",q:"How would a Chinese professional typically express disagreement according to the passage?",a:"By saying something indirect like that might be difficult",opts:["By saying no directly and clearly","By using nonverbal cues only, without words","By saying something indirect like that might be difficult","By asking a question instead of disagreeing"],correctIdx:2},
 ];
 
+function initPractice() {
+  state.vocabIdx = state.vocabIdx || 0;
+  switchPracticeTab('vocab', document.querySelector('#page-practice .tab-item'));
+}
+
+function switchPracticeTab(tab, btn) {
+  // Update active tab button
+  document.querySelectorAll('#page-practice .tab-item').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const container = document.getElementById('practiceContent');
+  if (!container) return;
+  if (tab === 'vocab')         renderVocabTab(container);
+  else if (tab === 'pronunciation') renderPronunciationTab(container);
+  else if (tab === 'speaking') renderSpeakingTab(container);
+  else if (tab === 'listening') renderListeningTab(container);
+  else if (tab === 'reading')  renderReadingPracticeTab(container);
+  else if (tab === 'wrong')    renderWrongTab(container);
+}
+
 function renderPronunciationTab(container) {
   const drill = PRONUNCIATION_DRILLS[Math.floor(Date.now()/5000) % PRONUNCIATION_DRILLS.length];
   container.innerHTML = `
