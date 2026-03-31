@@ -64,7 +64,8 @@ body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui
 .card-title { font-size:.75rem; font-weight:700; color:var(--text2); margin-bottom:.6rem; text-transform:uppercase; letter-spacing:1.2px; }
 
 /* BADGES */
-.badge { display:inline-block; padding:.2rem .7rem; border-radius:20px; font-size:.75rem; font-weight:600; }
+.badge { display:inline-block; padding:.35rem 1rem; border-radius:20px; font-size:.85rem; font-weight:700; letter-spacing:.02em; }
+.home-card-badge { margin-top:auto; padding-top:1rem; }
 .badge-blue { background:rgba(37,99,235,.2); color:var(--accent3); border:1px solid rgba(37,99,235,.3); }
 .badge-green { background:rgba(16,185,129,.2); color:#34d399; border:1px solid rgba(16,185,129,.3); }
 .badge-yellow { background:rgba(245,158,11,.2); color:#fcd34d; border:1px solid rgba(245,158,11,.3); }
@@ -189,7 +190,7 @@ body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui
   .hpi-stats { gap:1.2rem; }
   .hpi-tip-bar { padding:.7rem 1rem; }
 }
-.home-card { background:var(--card); border:1.5px solid var(--border); border-radius:var(--radius-lg); padding:1.5rem 1.4rem; cursor:pointer; transition:all .2s ease; box-shadow:var(--shadow-sm); }
+.home-card { background:var(--card); border:1.5px solid var(--border); border-radius:var(--radius-lg); padding:1.5rem 1.4rem; cursor:pointer; transition:all .2s ease; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; }
 .home-card:hover { border-color:#00a651; box-shadow:var(--shadow-md); transform:translateY(-3px); }
 .home-card:active { transform:translateY(-1px); }
 .home-card-icon { font-size:2.2rem; margin-bottom:.9rem; display:block; }
@@ -471,31 +472,31 @@ canvas.chart { width:100%; border-radius:8px; }
       <div class="home-card-icon">📚</div>
       <h3>Study Plan</h3>
       <p>20-day personalized learning roadmap based on your assessment results</p>
-      <div style="margin-top:1rem"><span class="badge badge-green">20 Days</span></div>
+      <div class="home-card-badge"><span class="badge badge-green">20 Days</span></div>
     </div>
     <div class="home-card" onclick="showPage('practice')">
       <div class="home-card-icon">✏️</div>
       <h3>Daily Practice</h3>
       <p>Vocabulary flashcards, speaking drills, and listening exercises</p>
-      <div style="margin-top:1rem"><span class="badge badge-yellow">Daily</span></div>
+      <div class="home-card-badge"><span class="badge badge-yellow">Daily</span></div>
     </div>
     <div class="home-card" onclick="showPage('exam')">
       <div class="home-card-icon">📝</div>
       <h3>Mock Exams</h3>
       <p>5 full-length practice tests simulating real SHL assessment conditions</p>
-      <div style="margin-top:1rem"><span class="badge badge-blue">5 Sets</span></div>
+      <div class="home-card-badge"><span class="badge badge-blue">5 Sets</span></div>
     </div>
     <div class="home-card" onclick="showPage('stats')">
       <div class="home-card-icon">📊</div>
       <h3>Statistics</h3>
       <p>Track your progress with detailed charts and performance analytics</p>
-      <div style="margin-top:1rem"><span class="badge badge-green">Analytics</span></div>
+      <div class="home-card-badge"><span class="badge badge-green">Analytics</span></div>
     </div>
     <div class="home-card" onclick="showWrongList()">
       <div class="home-card-icon">🔄</div>
       <h3>Wrong Answers</h3>
       <p>Review and re-practice questions you got wrong in previous sessions</p>
-      <div style="margin-top:1rem"><span class="badge badge-red" id="wrongCountBadge">0 Items</span></div>
+      <div class="home-card-badge"><span class="badge badge-red" id="wrongCountBadge">0 Items</span></div>
     </div>
   </div>
 
