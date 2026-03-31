@@ -345,7 +345,7 @@ canvas.chart { width:100%; border-radius:8px; }
     <div class="nav-logo">SHL<span>.TEST</span></div>
     <div class="nav-links">
       <button class="nav-btn" onclick="showPage('home')">Home</button>
-      <button class="nav-btn" onclick="showPage('test')">Assessment</button>
+      <button class="nav-btn" onclick="startTest('assessment')">Assessment</button>
       <button class="nav-btn" onclick="showPage('study')">Study Plan</button>
       <button class="nav-btn" onclick="showPage('practice')">Practice</button>
       <button class="nav-btn" onclick="showPage('exam')">Mock Exam</button>
@@ -363,7 +363,7 @@ canvas.chart { width:100%; border-radius:8px; }
     <div class="home-stats" id="homeStats"></div>
   </div>
   <div class="home-grid">
-    <div class="home-card" onclick="showPage('test')">
+    <div class="home-card" onclick="startTest('assessment')">
       <div class="home-card-icon">🎯</div>
       <h3>Level Assessment</h3>
       <p>28-question diagnostic test to determine your CEFR level across 6 dimensions</p>
