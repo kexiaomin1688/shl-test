@@ -1896,7 +1896,6 @@ function renderExamQuestion() {
   const total=state.examQuestions.length;
   document.getElementById('examProgressText').textContent=`Q ${state.examCurrent+1}/${total}`;
   document.getElementById('examProgressBar').style.width=((state.examCurrent/total)*100)+'%';
-  document.getElementById('examNextBtn').textContent=state.examCurrent===total-1?'Submit ✓':'Next →';
   // Sync fixed bottom bar
   const bar = document.getElementById('examFixedBar');
   if(bar) bar.style.display='flex';
