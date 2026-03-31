@@ -679,6 +679,11 @@ let state = {
 // ============================================================
 function showPage(name) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  // Login page uses position:fixed — must explicitly hide it when leaving
+  if(name !== 'login') {
+    const lp = document.getElementById('page-login');
+    if(lp) lp.style.display = 'none';
+  }
   document.getElementById('page-'+name).classList.add('active');
   state.page = name;
   if(name==='home') initHome();
