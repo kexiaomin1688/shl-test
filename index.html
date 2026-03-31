@@ -363,12 +363,7 @@ canvas.chart { width:100%; border-radius:8px; }
     <div class="home-stats" id="homeStats"></div>
   </div>
   <div class="home-grid">
-    <div class="home-card" onclick="startTest('assessment')">
-      <div class="home-card-icon">🎯</div>
-      <h3>Level Assessment</h3>
-      <p>28-question diagnostic test to determine your CEFR level across 6 dimensions</p>
-      <div style="margin-top:1rem"><span class="badge badge-blue">24 Questions</span></div>
-    </div>
+
     <div class="home-card" onclick="showPage('study')">
       <div class="home-card-icon">📚</div>
       <h3>Study Plan</h3>
@@ -671,144 +666,146 @@ const US = {
 // QUESTION BANK (28 questions per set: A×3, B×4, C×3, D×10, E×5, F×3)
 // ============================================================
 function generateQuestions(seed=0) {
-  const readingTexts = [
+  // Helper: deterministic shuffle by seed
+  function seededShuffle(arr, s) {
+    const a=[...arr]; let seed=s+1;
+    for(let i=a.length-1;i>0;i--){seed=(seed*1664525+1013904223)&0xffffffff;const j=Math.abs(seed)%(i+1);[a[i],a[j]]=[a[j],a[i]];}
+    return a;
+  }
+
+  const bank = [];
+  let idx = 0;
+
+  // ── Pull from REAL_SHL_QUESTIONS pool (shuffled by seed) ──
+  const allRQ = typeof REAL_SHL_QUESTIONS !== 'undefined' ? REAL_SHL_QUESTIONS : [];
+  
+  // A: Verbal (True/False/Cannot Say) – 4 questions
+  const verbalPool = seededShuffle(allRQ.filter(q=>q.type==='verbal'), seed+1);
+  verbalPool.slice(0,4).forEach(q=>{
+    bank.push({id:idx++,type:'verbal',dim:'A',
+      passage:q.passage,statement:q.statement,
+      options:q.options||['True','False','Cannot Say'],
+      a:q.a,explanation:q.explanation||'',points:10});
+  });
+
+  // B: Read Aloud – 3 questions (Pronunciation)
+  const readingTextsAll = [
     "The development of renewable energy has accelerated significantly in recent decades.",
     "Communication technology has transformed the way people interact globally.",
     "Environmental conservation requires collective action from all sectors of society.",
     "Scientific research often challenges our existing understanding of the natural world.",
-    "Cultural diversity enriches communities by bringing together different perspectives."
+    "Cultural diversity enriches communities by bringing together different perspectives.",
+    "Effective leadership requires clear communication and the ability to inspire others.",
+    "Data-driven decision making is transforming business strategy worldwide.",
+    "The globalisation of trade has created opportunities and challenges for all nations."
   ];
-  const vocabQs = [
-    {q:"'Leverage' in a BD context means:",opts:["A physical tool","Use something to maximum advantage","A budget item","A report"],a:1},
-    {q:"'Conversion rate' measures:",opts:["Delivery speed","Visitors who become paying customers","Order accuracy","Rider efficiency"],a:1},
-    {q:"'Scalable' means a solution:",opts:["Only works at small scale","Can grow without losing performance","Is expensive","Is manual"],a:1},
-    {q:"To 'benchmark' against a competitor means to:",opts:["Copy them","Compare your performance against theirs","Surpass them","Ignore them"],a:1},
-    {q:"'Incremental revenue' refers to:",opts:["Fixed income","Additional revenue on top of existing income","One-time payment","Total annual revenue"],a:1},
-    {q:"'Retention' in platform operations means:",opts:["Hiring new users","Keeping existing users active","Delivery accuracy","Marketing spend"],a:1},
-    {q:"'Mitigate the risk' means to:",opts:["Ignore it","Make it less severe","Accept it fully","Escalate immediately"],a:1},
-    {q:"'Facilitate a meeting' means to:",opts:["Cancel it","Attend it","Help it run smoothly","Record the minutes"],a:2},
+  const shuffledRT = seededShuffle(readingTextsAll, seed+2);
+  for(let i=0;i<3;i++) {
+    bank.push({id:idx++,type:'reading',dim:'A',
+      text:`Read this sentence aloud:
+"${shuffledRT[i]}"`,
+      target:shuffledRT[i],points:10});
+  }
+
+  // C: Retelling – 3 questions (Fluency)
+  const retellingAll = [
+    "I enjoy learning new languages because it opens doors to different cultures.",
+    "Technology makes it easier for people to stay connected with family and friends.",
+    "Exercise is important for maintaining both physical and mental health.",
+    "Reading books regularly can significantly improve your vocabulary and comprehension.",
+    "Effective communication is one of the most valuable skills in any workplace.",
+    "Adapting to change quickly is a critical skill in today's fast-paced business world.",
+    "Customer satisfaction is the foundation of any successful business.",
+    "Collaboration across teams drives better outcomes than working in isolation."
   ];
-  const situationQs = [
-    {q:"A restaurant partner says your commission rate is too high. How do you respond?",opts:["Tell them to accept it or leave","Acknowledge their concern and reframe around the incremental revenue the platform generates","Immediately offer a discount","End the call"],a:1,explanation:"Effective BD acknowledges concerns and reframes around value (incremental revenue) rather than defending cost."},
-    {q:"Your BDM misses the weekly sign-up target by 30%. You are their manager. What is the most effective first step?",opts:["Report them to HR","Have a private conversation to understand the root cause before proposing solutions","Publicly announce the miss in the team meeting","Immediately reassign their territory"],a:1,explanation:"Good management starts with understanding the root cause privately before deciding action."},
-    {q:"During a partner onboarding call in English, you don't understand a word the partner used. What do you do?",opts:["Pretend you understood and continue","Politely say: 'Could you clarify what you mean by that?'","End the call and send an email instead","Ask a colleague to take over"],a:1,explanation:"Asking for clarification is professional and prevents misunderstandings in cross-language communication."},
-    {q:"You are presenting Q1 results and a senior leader asks a question you cannot answer. Best response?",opts:["Make up an answer","Say 'I don't know' and change the topic","Acknowledge you don't have the data at hand and commit to following up with a specific timeline","Blame the data team"],a:2,explanation:"Admitting knowledge gaps with a clear follow-up commitment maintains credibility."},
-    {q:"A restaurant partner emails you in English asking about payment terms. Your response should:",opts:["Reply in Chinese only","Reply in English, confirm the terms clearly, and offer to answer further questions","Forward to a colleague without replying","Wait until the next quarterly review"],a:1,explanation:"Prompt, clear English responses to partner queries build trust and demonstrate professionalism."},
-    {q:"In a cross-functional meeting, a colleague from another team proposes a solution that conflicts with your BD data. You should:",opts:["Stay silent to avoid conflict","Interrupt and dismiss their idea","Politely share your data: 'Our field data suggests a different picture — could we align on this?'","Agree publicly then complain privately"],a:2,explanation:"Sharing data constructively promotes alignment while maintaining professional relationships."},
-  ];
+  const shuffledRet = seededShuffle(retellingAll, seed+3);
+  for(let i=0;i<3;i++) {
+    bank.push({id:idx++,type:'retelling',dim:'B',
+      speech:shuffledRet[i],
+      text:'Listen and repeat the following sentence.',points:10});
+  }
+
+  // D: Listening – 3 questions
   const listeningQs = [
     {q:"[Listen] The speaker is mainly talking about:",speech:"The impact of social media on modern communication patterns has been profound and far-reaching.",opts:["Weather patterns","Social media's effect on communication","Economic policies","Historical events"],a:1},
     {q:"[Listen] What does the speaker recommend?",speech:"To improve your English fluency, practice speaking for at least thirty minutes every single day.",opts:["Study grammar rules","Practice daily speaking","Watch movies only","Read newspapers"],a:1},
     {q:"[Listen] The main topic is:",speech:"Climate change poses significant challenges to agriculture and food security worldwide.",opts:["Technology","Climate and food","Sports","Fashion"],a:1},
     {q:"[Listen] According to the speaker:",speech:"Critical thinking and problem-solving skills are increasingly valued in today's job market.",opts:["Technical skills only matter","Critical thinking is valued","Grades are everything","Language is unimportant"],a:1},
+    {q:"[Listen] The speaker's key point is:",speech:"Building strong relationships with partners requires consistent follow-up and honest communication.",opts:["Price is everything in partnerships","Relationships need consistent follow-up and honesty","Avoid communicating too frequently","Focus only on short-term gains"],a:1},
+    {q:"[Listen] What does the speaker advise?",speech:"When presenting data to stakeholders, always contextualise numbers with a clear story about what they mean for the business.",opts:["Avoid explaining numbers","Contextualise data with a business story","Use raw numbers only","Let stakeholders interpret data alone"],a:3},
   ];
-
-  // Extended vocabulary question bank — Business English / Food Delivery / Internet
-  const vocabQsAll = [
-    // Core business terms
-    {q:"In a BD meeting, a colleague says 'we need to leverage our existing network.' What does 'leverage' mean here?",opts:["Ignore","Use to maximum advantage","Report to management","Reduce"],a:1,explanation:"To leverage means to use something to maximum advantage — here, using existing contacts."},
-    {q:"'Our conversion rate dropped by 5%.' What does conversion rate measure?",opts:["Delivery speed","The proportion of visitors who become paying customers","Revenue per order","Number of restaurants"],a:1,explanation:"Conversion rate = the % of users who complete a desired action (e.g. placing an order)."},
-    {q:"'The new rider incentive programme improved retention.' What does retention mean?",opts:["Hiring new riders","Keeping existing riders active on the platform","Training speed","Delivery accuracy"],a:1,explanation:"Retention = the ability to keep users/partners continuing to use or work with the platform."},
-    {q:"A manager says the solution must be 'scalable'. This means:",opts:["It works only in small teams","It can grow without losing performance","It is expensive to build","It has been tested abroad"],a:1,explanation:"Scalable = can grow in size or volume without performance degrading."},
-    {q:"'We need to prioritise accounts with the highest GMV potential.' GMV stands for:",opts:["General Monthly Volume","Gross Merchandise Value","Global Market Validation","Growth Metric Value"],a:1,explanation:"GMV (Gross Merchandise Value) is the total value of merchandise sold through the platform."},
-    {q:"A restaurant partner is worried about commission. You reframe it around 'incremental revenue'. What does incremental mean?",opts:["One-time","Gradual additional increase","Guaranteed","Fixed"],a:1,explanation:"Incremental = additional growth coming on top of what already exists — extra orders from the platform."},
-    {q:"'We need to benchmark our delivery time against competitors.' To benchmark means to:",opts:["Copy a competitor","Set a standard point of comparison","Exceed all targets","Reduce costs"],a:1,explanation:"To benchmark is to measure your performance against a standard or competitor reference."},
-    {q:"'The logistics system must handle peak-hour demand fluctuation.' Fluctuation means:",opts:["Steady growth","Irregular changes in level","Permanent decline","Technical failure"],a:1,explanation:"Fluctuation = irregular rises and falls in a quantity — here, order volume varying by hour."},
-    {q:"Your manager asks you to 'mitigate the risk' of low partner retention. Mitigate means to:",opts:["Eliminate completely","Make less severe","Ignore temporarily","Document formally"],a:1,explanation:"To mitigate = to reduce the severity or impact of something negative."},
-    {q:"In a stakeholder meeting, you want to 'align all parties.' Align in this context means:",opts:["Disagree formally","Bring into agreement or coordination","Send a report","Schedule a follow-up"],a:1,explanation:"To align stakeholders = to ensure everyone shares the same goals, understanding, or approach."},
-    {q:"A BD rep is described as 'accountable for 20 sign-ups per week.' Accountable means:",opts:["Able to count numbers","Responsible and answerable for results","Exempt from review","A senior manager"],a:1,explanation:"Accountable = responsible to others for your decisions and outcomes."},
-    {q:"'We need a more viable approach to onboarding SMB partners.' Viable means:",opts:["Expensive","Complicated","Capable of working successfully","Already tested"],a:2,explanation:"Viable = capable of working successfully; feasible in practice."},
-    {q:"'The proposal was concise and well-structured.' Concise means:",opts:["Lengthy and detailed","Brief and clearly expressed","Formal and official","Creative and original"],a:1,explanation:"Concise = expressing much in few words, without unnecessary detail."},
-    {q:"'The manager delegated the follow-up calls to the BD team.' Delegate means:",opts:["Cancel","Assign a task to someone else","Do personally","Review later"],a:1,explanation:"To delegate = to entrust a task or responsibility to another person."},
-    {q:"A colleague says the report was 'transparent'. In this context, transparent means:",opts:["Invisible","Printed clearly","Open and honest, not concealing anything","Colourful"],a:2,explanation:"Transparent = open, honest, and not concealing information — a key value in business reporting."},
-    {q:"'Facilitate' the onboarding meeting means:",opts:["Cancel","Record the minutes","Make it easier and help it run smoothly","Translate the content"],a:2,explanation:"To facilitate = to make a process easier or help it happen effectively."},
-    {q:"'The team showed great persistence despite setbacks.' Persistence most closely means:",opts:["Speed","Talent","Continuing firmly despite difficulty","Creativity"],a:2,explanation:"Persistence = continuing firmly in a course of action despite difficulty or opposition."},
-    {q:"A restaurant is described as a 'lucrative partner'. This means the restaurant is:",opts:["Difficult to manage","Very profitable","Located far away","New to the platform"],a:1,explanation:"Lucrative = producing a great deal of money or profit."},
-    {q:"You need to 'elaborate on your Q1 performance.' Elaborate means:",opts:["Summarise briefly","Provide more detail","Repeat the same point","Change the topic"],a:1,explanation:"To elaborate = to add more detail or develop a point further."},
-    {q:"'Procurement of delivery equipment requires three vendor quotes.' Procurement means:",opts:["Disposal","The process of obtaining goods or services","Training","Quality check"],a:1,explanation:"Procurement = the process of obtaining/buying goods or services for an organisation."},
-  ];
-
-  // Extended reading comprehension passages — Business / Food Delivery / Internet focused
-  const readingCompQs = [
-    // Q1: correct = a:2 (option C)
-    {passage:"Last-mile delivery accounts for over 50% of total logistics costs in e-commerce. For food delivery platforms, the challenge is even more acute: orders must arrive within 30 minutes while maintaining food quality. Platforms that invest in route optimisation and rider incentive structures consistently outperform on both speed and customer satisfaction metrics.",q:"According to the passage, which factor is NOT mentioned as contributing to platform outperformance?",opts:["Route optimisation investment","Rider incentive structures","Reducing delivery zone size","Maintaining food quality standards"],a:2,explanation:"Reducing delivery zone size is not mentioned. The passage cites route optimisation and rider incentives as the key performance drivers."},
-    // Q2: correct = a:0 (option A)
-    {passage:"Acquiring restaurant partners is one of the highest-leverage activities in a food delivery platform\'s growth strategy. Research shows that a diverse merchant supply directly increases order frequency and basket size among existing users. A structured onboarding process, including technical setup and an initial marketing boost, significantly reduces partner churn in the first 90 days.",q:"What does the passage identify as the primary benefit of merchant diversity for existing users?",opts:["Higher order frequency and basket size","Reduced onboarding cost","Lower logistics complexity","Faster delivery times"],a:0,explanation:"The passage states diverse merchant supply directly increases order frequency and basket size among existing users."},
-    // Q3: correct = a:3 (option D)
-    {passage:"In competitive markets, retaining existing users is up to five times less expensive than acquiring new ones. Leading platforms have responded by expanding into adjacent services such as grocery and pharmacy delivery to increase daily touchpoints. This super-app approach reduces churn risk even when competitors launch aggressive discount campaigns.",q:"According to the passage, what does the super-app strategy primarily protect against?",opts:["Higher delivery costs","Regulatory compliance issues","Rider shortage problems","Competitor discount campaigns causing churn"],a:3,explanation:"The passage states the super-app approach reduces churn risk even when competitors launch aggressive discount campaigns."},
-    // Q4: correct = a:1 (option B)
-    {passage:"Effective business development in the food delivery industry requires both language proficiency and cultural intelligence. BD representatives who can communicate clearly in English while understanding local business norms close deals 40% faster on average. The ability to explain complex commercial terms — such as commission structures, settlement cycles, and performance tiers — in plain language is particularly valued.",q:"What specific skill does the passage say is particularly valued in BD roles?",opts:["Fluency in multiple Asian languages","Explaining complex commercial terms in plain language","Using technical industry jargon","Rapid contract drafting skills"],a:1,explanation:"The passage states explaining complex commercial terms in plain language is particularly valued."},
-    // Q5: correct = a:2 (option C)
-    {passage:"Data analytics has become a core competitive advantage in platform-based businesses. Food delivery platforms that use predictive modelling to anticipate demand surges can pre-position riders and reduce average delivery time by up to 25%. Beyond operations, data also enables personalised marketing and dynamic pricing — both of which improve unit economics significantly.",q:"What does the passage suggest about the role of data analytics beyond operational benefits?",opts:["It primarily reduces rider headcount","It is only useful for predicting demand","It enables personalised marketing and dynamic pricing","It replaces the need for strategic planning"],a:2,explanation:"The passage states data also enables personalised marketing and dynamic pricing, improving unit economics — this is the non-operational benefit highlighted."},
-    // Q6: correct = a:0 (option A) — harder new question
-    {passage:"Cross-cultural communication in global businesses involves navigating different expectations around directness, hierarchy, and relationship-building. High-context cultures — such as those common in East Asia and the Middle East — rely heavily on implicit communication, shared understanding, and non-verbal cues. Low-context cultures, more common in Northern Europe and North America, tend to favour explicit, direct language and documented agreements.",q:"Which of the following best describes a high-context communication culture?",opts:["Communication relies on shared understanding and implicit cues","All agreements must be written in formal documents","Direct and explicit language is always preferred","Communication avoids any non-verbal elements"],a:0,explanation:"High-context cultures rely on implicit communication and shared understanding — this is the key characteristic described in the passage."},
-    // Q7: correct = a:3 (option D)
-    {passage:"Writing effective business emails requires clarity, conciseness, and a professional tone. A well-structured email should begin with a clear subject line that summarises the purpose, followed by a brief greeting. The body should state the purpose in the first sentence and end with a clear call to action. For cross-cultural correspondence, be mindful of directness — some cultures prefer indirect phrasing. Always proofread before sending.",q:"The passage suggests that cross-cultural emails require special attention to what?",opts:["Font size and email formatting","The number of recipients","Whether to use formal or informal greetings","The level of directness in phrasing"],a:3,explanation:"The passage specifically says: for cross-cultural correspondence, be mindful of directness — some cultures prefer indirect phrasing."},
-    // Q8: correct = a:1 (option B)
-    {passage:"Keeta, Meituan\'s international food delivery arm, has expanded rapidly into markets across the Middle East. After launching in Saudi Arabia, Keeta entered Kuwait, Qatar, and the UAE, adapting its platform to local preferences — including Arabic language support, Halal restaurant filtering, and culturally appropriate customer service protocols. The company\'s strategy prioritises market localisation to build strong merchant networks.",q:"What is the central feature of Keeta\'s international expansion strategy?",opts:["Launching in as many markets as possible simultaneously","Adapting the platform to each market\'s local language and culture","Using a single standardised product across all markets","Focusing exclusively on large markets"],a:1,explanation:"The passage states Keeta\'s strategy prioritises market localisation — adapting language, cultural features, and service protocols to each country."},
-  ];
-
-  const bank = [];
-  let idx = 0;
-
-  // A: Read Aloud – 3 questions (Pronunciation)
+  const shuffledLQ = seededShuffle(listeningQs, seed+4);
   for(let i=0;i<3;i++) {
-    bank.push({id:idx++,type:'reading',dim:'A',
-      text:`Read this sentence aloud:\n"${readingTexts[(i+seed)%readingTexts.length]}"`,
-      target:readingTexts[(i+seed)%readingTexts.length],points:10});
+    bank.push({id:idx++,type:'listening',dim:'C',...shuffledLQ[i],points:10});
   }
 
-  // B: Repeat (Retelling) – 4 questions (Fluency)
-  const retellingTexts = [
-    "I enjoy learning new languages because it opens doors to different cultures.",
-    "Technology makes it easier for people to stay connected with family and friends.",
-    "Exercise is important for maintaining both physical and mental health.",
-    "Reading books regularly can significantly improve your vocabulary and comprehension."
+  // E: Vocabulary – 5 questions (from REAL_SHL_QUESTIONS vocab pool)
+  const vocabRQ = seededShuffle(allRQ.filter(q=>q.type==='vocab'), seed+5);
+  const vocabInline = [
+    {q:"'Leverage' in a BD context means:",opts:["A physical tool","Use something to maximum advantage","A budget item","A report"],a:1,explanation:"To leverage means to use something to maximum advantage."},
+    {q:"'Conversion rate' measures:",opts:["Delivery speed","Visitors who become paying customers","Order accuracy","Rider efficiency"],a:1,explanation:"Conversion rate = the % of users who complete a desired action."},
+    {q:"'Scalable' means a solution:",opts:["Only works at small scale","Can grow without losing performance","Is expensive","Is manual"],a:1,explanation:"Scalable = can grow in size without performance degrading."},
+    {q:"To 'benchmark' means to:",opts:["Copy a competitor","Compare performance against a reference","Surpass all targets","Ignore the market"],a:1,explanation:"To benchmark = to measure performance against a standard or competitor."},
+    {q:"'Retention' means:",opts:["Hiring new users","Keeping existing users active","Delivery accuracy","Marketing spend"],a:1,explanation:"Retention = keeping existing users or partners active on the platform."},
+    {q:"'Mitigate the risk' means:",opts:["Ignore it","Make it less severe","Accept it fully","Escalate immediately"],a:1,explanation:"To mitigate = to reduce the severity of something negative."},
+    {q:"'Facilitate a meeting' means to:",opts:["Cancel it","Attend it","Help it run smoothly","Record the minutes"],a:2,explanation:"To facilitate = to make a process easier or help it happen effectively."},
   ];
-  for(let i=0;i<4;i++) {
-    bank.push({id:idx++,type:'retelling',dim:'B',
-      speech:retellingTexts[(i+seed)%retellingTexts.length],
-      text:`Listen and repeat the following sentence.`,points:10});
-  }
-
-  // C: Listen & Answer – 3 questions (Listening)
-  for(let i=0;i<3;i++) {
-    const q=listeningQs[(i+seed)%listeningQs.length];
-    bank.push({id:idx++,type:'listening',dim:'C',...q,points:10});
-  }
-
-  // D: Vocabulary – 10 questions
-  for(let i=0;i<10;i++) {
-    const q=vocabQsAll[(i+seed*3)%vocabQsAll.length];
-    bank.push({id:idx++,type:'vocab',dim:'D',...q,points:10});
-  }
-
-  // E: Reading Comprehension – 5 questions
+  const vocabAllCombined = seededShuffle([...vocabRQ, ...vocabInline], seed+5);
   for(let i=0;i<5;i++) {
-    const q=readingCompQs[(i+seed)%readingCompQs.length];
-    bank.push({id:idx++,type:'reading_comp',dim:'E',
-      passage:q.passage,text:q.q,opts:q.opts,a:q.a,explanation:q.explanation,points:10});
+    const q=vocabAllCombined[i%vocabAllCombined.length];
+    bank.push({id:idx++,type:'vocab',dim:'D',
+      q:q.q,opts:q.opts||q.options,a:q.a,explanation:q.explanation,points:10});
   }
 
-  // F: Speak Freely – 3 questions (Grammar/Speaking)
-  const speechTopics = [
-    "Talk about your daily routine",
-    "Describe your ideal job",
-    "Explain why English is important",
-    "Describe a memorable experience"
+  // F: Reading Comprehension – 4 questions (from REAL_SHL_QUESTIONS reading_comp)
+  const rcRQ = seededShuffle(allRQ.filter(q=>q.type==='reading_comp'), seed+6);
+  const rcInline = [
+    {passage:"Last-mile delivery accounts for over 50% of total logistics costs in e-commerce. For food delivery platforms, orders must arrive within 30 minutes while maintaining food quality. Platforms that invest in route optimisation and rider incentive structures consistently outperform on both speed and satisfaction.",q:"According to the passage, which factor is NOT mentioned as contributing to platform outperformance?",opts:["Route optimisation investment","Rider incentive structures","Reducing delivery zone size","Maintaining food quality standards"],a:2,explanation:"Reducing delivery zone size is not mentioned."},
+    {passage:"Acquiring restaurant partners is one of the highest-leverage activities in a food delivery platform's growth strategy. A diverse merchant supply directly increases order frequency and basket size. A structured onboarding process significantly reduces partner churn in the first 90 days.",q:"What is the primary benefit of merchant diversity for existing users?",opts:["Higher order frequency and basket size","Reduced onboarding cost","Lower logistics complexity","Faster delivery times"],a:0,explanation:"The passage states diverse supply directly increases order frequency and basket size."},
+    {passage:"In competitive markets, retaining existing users is up to five times less expensive than acquiring new ones. Leading platforms expand into adjacent services to increase daily touchpoints. This super-app approach reduces churn risk even when competitors launch aggressive discount campaigns.",q:"What does the super-app strategy primarily protect against?",opts:["Higher delivery costs","Regulatory issues","Rider shortages","Competitor discounts causing churn"],a:3,explanation:"The passage states this approach reduces churn risk during competitor discount campaigns."},
+    {passage:"Data analytics has become a core competitive advantage. Food delivery platforms that use predictive modelling to anticipate demand surges can pre-position riders and reduce delivery time by up to 25%. Beyond operations, data enables personalised marketing and dynamic pricing.",q:"What non-operational benefit of data analytics does the passage mention?",opts:["Eliminating the need for riders","Reducing delivery time","Personalised marketing and dynamic pricing","Replacing strategic planning"],a:2,explanation:"The passage states data enables personalised marketing and dynamic pricing beyond operational uses."},
   ];
+  const rcAll = seededShuffle([...rcRQ, ...rcInline], seed+6);
+  for(let i=0;i<4;i++) {
+    const q=rcAll[i%rcAll.length];
+    bank.push({id:idx++,type:'reading_comp',dim:'E',
+      passage:q.passage,text:q.q||q.text,opts:q.opts||q.options,a:q.a,explanation:q.explanation,points:10});
+  }
+
+  // G: Situational Judgement – 3 questions (from REAL_SHL_QUESTIONS situation)
+  const sitRQ = seededShuffle(allRQ.filter(q=>q.type==='situation'), seed+7);
+  const sitInline = [
+    {q:"A restaurant partner says your commission rate is too high. You respond:",opts:["Tell them to accept it or leave","Acknowledge their concern and reframe around incremental revenue","Immediately offer a discount","End the call"],a:1,explanation:"Effective BD acknowledges concerns and reframes around value."},
+    {q:"During an English meeting you disagree with a colleague's proposal. You should:",opts:["Interrupt and say 'That's wrong'","Wait, then say 'Interesting point — I'd like to offer a different perspective'","Stay silent to avoid conflict","Text in the group chat contradicting them"],a:1,explanation:"Respectful disagreement after listening is most professionally effective."},
+  ];
+  const sitAll = seededShuffle([...sitRQ, ...sitInline], seed+7);
+  for(let i=0;i<3;i++) {
+    const q=sitAll[i%sitAll.length];
+    bank.push({id:idx++,type:'situation',dim:'C',
+      q:q.q,opts:q.opts||q.options,a:q.a,explanation:q.explanation,points:10});
+  }
+
+  // H: Speak Freely – 3 questions
+  const speechTopics = [
+    "Talk about your daily routine at work",
+    "Describe your ideal approach to partner onboarding",
+    "Explain why English is important in your current role",
+    "Describe a recent business challenge and how you approached it",
+    "Talk about how you handle feedback from stakeholders",
+    "Describe what good teamwork looks like to you",
+    "Explain how you prioritise your workload during a busy week",
+    "Describe a time when you had to communicate complex data simply"
+  ];
+  const shuffledST = seededShuffle(speechTopics, seed+8);
   for(let i=0;i<3;i++) {
     bank.push({id:idx++,type:'speech',dim:'F',
-      text:`Speak for 30-60 seconds on the topic:\n"${speechTopics[(i+seed)%speechTopics.length]}"`,
-      topic:speechTopics[(i+seed)%speechTopics.length],points:10});
+      text:`Speak for 30-60 seconds on the topic:\n"${shuffledST[i]}"`,
+      topic:shuffledST[i],points:10});
   }
 
   return bank;
 }
 
-// ============================================================
-// SCORING ENGINE
-// ============================================================
 function calcScore(answers, questions) {
   const dimScores = {A:0,B:0,C:0,D:0,E:0,F:0};
   const dimCounts = {A:0,B:0,C:0,D:0,E:0,F:0};
@@ -1557,8 +1554,40 @@ function initStudy() {
 }
 
 function startDayPractice(day) {
-  state.currentDay=day;
-  showPage('practice');
+  // Toggle day expansion inline instead of navigating to Practice
+  const plan=S.get('shl_plan',[]);
+  const d=plan.find(p=>p.day===day);
+  if(!d) return;
+  // Build modal-style overlay on study page
+  const overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:999;display:flex;align-items:center;justify-content:center;';
+  const themeVocab=VOCAB_BANK.filter((_,i)=>i%20===day%20);
+  const drill=SPEAKING_DRILLS[day % (typeof SPEAKING_DRILLS[0]==='string' ? SPEAKING_DRILLS.filter(s=>typeof s==='string').length : SPEAKING_DRILLS.length)];
+  const drillText=typeof drill==='string'?drill:'Speak freely about your work today.';
+  overlay.innerHTML=`<div style="background:var(--card);border-radius:16px;padding:2rem;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;position:relative">
+    <div style="font-size:1.1rem;font-weight:700;margin-bottom:1rem">📅 Day ${day}: ${d.theme}</div>
+    <div style="font-size:.85rem;color:var(--text2);margin-bottom:1.2rem">Click any task to start. Progress saves automatically.</div>
+    <div style="display:flex;flex-direction:column;gap:.7rem">
+      <div style="padding:.9rem 1rem;background:rgba(99,102,241,.1);border-radius:10px;cursor:pointer" onclick="showPage('practice');this.closest('div[style*=fixed]').remove()">
+        📖 <strong>Vocabulary</strong> — Learn 10 business words <span style="float:right;color:var(--text2)">→</span>
+      </div>
+      <div style="padding:.9rem 1rem;background:rgba(16,185,129,.1);border-radius:10px;cursor:pointer" onclick="showPage('practice');document.querySelectorAll('.tab-item')[2]?.click();this.closest('div[style*=fixed]').remove()">
+        🎤 <strong>Speaking Drill</strong> — "${drillText.slice(0,60)}..." <span style="float:right;color:var(--text2)">→</span>
+      </div>
+      <div style="padding:.9rem 1rem;background:rgba(245,158,11,.1);border-radius:10px;cursor:pointer" onclick="showPage('practice');document.querySelectorAll('.tab-item')[3]?.click();this.closest('div[style*=fixed]').remove()">
+        🎧 <strong>Listening</strong> — Practice comprehension <span style="float:right;color:var(--text2)">→</span>
+      </div>
+    </div>
+    ${d.completed?'<span style="color:#34d399;font-size:.9rem">✅ Day completed!</span>':`<button class="btn btn-primary" style="width:100%;margin-top:1.2rem" onclick="markDayComplete(${day});this.closest('div[style*=fixed]').remove()">✅ Mark Day Complete</button>`}
+    <button style="position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--text2);font-size:1.2rem;cursor:pointer" onclick="this.closest('div[style*=fixed]').remove()">✕</button>
+  </div>`;
+  document.body.appendChild(overlay);
+}
+
+function markDayComplete(day) {
+  const plan=S.get('shl_plan',[]);
+  const d=plan.find(p=>p.day===day);
+  if(d){ d.completed=true; S.set('shl_plan',plan); initStudy(); }
 }
 
 // ============================================================
@@ -1633,8 +1662,9 @@ function switchPracticeTab(tab, el) {
   document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'));
   if(el) el.classList.add('active');
   const content=document.getElementById('practiceContent');
-  if(tab==='vocab') renderVocabTab(content);
-  else if(tab==='pronunciation') renderPronunciationTab(content);
+  // Randomise starting position when switching tabs
+  if(tab==='vocab') { state.vocabIdx=Math.floor(Math.random()*VOCAB_BANK.length); vocabFlipped=false; renderVocabTab(content); }
+  else if(tab==='pronunciation') { state.pronIdx=Math.floor(Math.random()*PRONUNCIATION_DRILLS.length); renderPronunciationTab(content); }
   else if(tab==='speaking') renderSpeakingTab(content);
   else if(tab==='listening') renderListeningTab(content);
   else if(tab==='reading') renderReadingPracticeTab(content);
