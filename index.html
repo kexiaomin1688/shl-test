@@ -1632,9 +1632,10 @@ function initDayPage() {
     });
   }
   state.dayTab = 'vocab';
-  state.dayVocabIdx = 0;
+  // Each day starts at a different word (offset by day-1), so Day 1 starts at word 1, Day 2 at word 2, etc.
+  state.dayVocabIdx = (day - 1) % VOCAB_BANK.length;
   state.dayVocabFlipped = false;
-  state.dayPronIdx = day % PRONUNCIATION_DRILLS.length;
+  state.dayPronIdx = (day - 1) % PRONUNCIATION_DRILLS.length;
   renderDayVocabTab();
 }
 
@@ -1675,10 +1676,21 @@ function renderDayVocabTab() {
         ${zh ? `<button class="btn btn-outline btn-sm" onclick="state.dayVocabFlipped=!state.dayVocabFlipped;renderDayVocabTab()">${flipped ? '🙈 Hide Chinese' : '🔄 Flip for Chinese'}</button>` : ''}
       </div>
       <div style="display:flex;gap:.8rem;justify-content:center">
-        <button class="btn btn-outline" onclick="state.dayVocabIdx=(idx-1+VOCAB_BANK.length)%VOCAB_BANK.length;state.dayVocabIdx=((${idx}-1+VOCAB_BANK.length)%VOCAB_BANK.length);state.dayVocabFlipped=false;renderDayVocabTab()">← Prev</button>
-        <button class="btn btn-primary" onclick="state.dayVocabIdx=(${idx}+1)%VOCAB_BANK.length;state.dayVocabFlipped=false;renderDayVocabTab()">Next →</button>
+        <button class="btn btn-outline" onclick="prevDayVocab()">← Prev</button>
+        <button class="btn btn-primary" onclick="nextDayVocab()">Next →</button>
       </div>
     </div>`;
+}
+
+function nextDayVocab() {
+  state.dayVocabIdx = (state.dayVocabIdx + 1) % VOCAB_BANK.length;
+  state.dayVocabFlipped = false;
+  renderDayVocabTab();
+}
+function prevDayVocab() {
+  state.dayVocabIdx = (state.dayVocabIdx - 1 + VOCAB_BANK.length) % VOCAB_BANK.length;
+  state.dayVocabFlipped = false;
+  renderDayVocabTab();
 }
 
 function renderDayPronTab() {
@@ -2150,9 +2162,11 @@ function renderVocabTab(container) {
       <div class="vocab-hint" style="color:var(--text2);font-size:.8rem;margin-top:1rem">👆 点击翻转查看解析</div>
     </div>
     <div class="vocab-controls">
-      <button class="btn btn-outline btn-sm" onclick="prevVocab()">← Previous</button>
-      <span style="color:var(--text2);font-size:.85rem">${(state.vocabIdx%VOCAB_BANK.length)+1} / ${VOCAB_BANK.length}</span>
-      <button class="btn btn-primary btn-sm" onclick="nextVocab()">Next →</button>
+      <button class="btn btn-outline btn-sm" onclick="prevVocab()" ${state.vocabIdx===0?'disabled':''}>← Previous</button>
+      <span style="color:var(--text2);font-size:.85rem">${state.vocabIdx+1} / ${VOCAB_BANK.length}</span>
+      ${state.vocabIdx >= VOCAB_BANK.length-1
+        ? `<button class="btn btn-outline btn-sm" onclick="state.vocabIdx=0;renderVocabTab(document.getElementById('practiceContent'))">🔁 Restart</button>`
+        : `<button class="btn btn-primary btn-sm" onclick="nextVocab()">Next →</button>`}
     </div>
     <div style="margin-top:1.5rem;display:flex;gap:.8rem;justify-content:center">
       <button class="btn btn-outline btn-sm" onclick="speakText('${v.word}')">🔊 发音示范</button>
@@ -2169,7 +2183,7 @@ function flipCard() {
     if(hint) hint.style.display = vocabFlipped ? 'none' : 'block';
   }
 }
-function nextVocab(){ state.vocabIdx++; renderVocabTab(document.getElementById('practiceContent')); }
+function nextVocab(){ state.vocabIdx=Math.min(state.vocabIdx+1, VOCAB_BANK.length-1); renderVocabTab(document.getElementById('practiceContent')); }
 function prevVocab(){ state.vocabIdx=Math.max(0,state.vocabIdx-1); renderVocabTab(document.getElementById('practiceContent')); }
 
 function renderSpeakingTab(container) {
