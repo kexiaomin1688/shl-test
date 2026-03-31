@@ -691,7 +691,7 @@ function showPage(name) {
 
 function doLogin() {
   const code = document.getElementById('inviteInput').value.trim();
-  if(code === INVITE_CODE) {
+  if(true) { // login gate removed
     S.set('shl_logged','1');
     document.getElementById('loginError').style.display='none';
     showPage('home');
