@@ -1877,30 +1877,51 @@ function renderDayPronTab() {
 }
 
 function toggleDayRecord() {
-  if (dayMediaRecorder && dayMediaRecorder.state === 'recording') return;
+  // Reset stale recorder state
+  if (dayMediaRecorder && dayMediaRecorder.state === 'recording') {
+    stopDayRecord();
+    return;
+  }
+  // Give immediate visual feedback before async getUserMedia
+  const recBtn = document.getElementById('dayRecBtn');
+  const stopBtn = document.getElementById('dayStopBtn');
+  const status = document.getElementById('dayRecStatus');
+  if (status) status.textContent = '⏳ Requesting microphone access…';
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    if (status) status.textContent = '⚠️ Your browser does not support microphone recording. Please use Chrome or Edge on HTTPS.';
+    return;
+  }
   dayAudioChunks = [];
   navigator.mediaDevices.getUserMedia({audio:true}).then(stream => {
-    dayMediaRecorder = new MediaRecorder(stream);
-    dayMediaRecorder.ondataavailable = e => dayAudioChunks.push(e.data);
+    const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '';
+    dayMediaRecorder = mimeType ? new MediaRecorder(stream, {mimeType}) : new MediaRecorder(stream);
+    dayMediaRecorder.ondataavailable = e => { if(e.data && e.data.size > 0) dayAudioChunks.push(e.data); };
     dayMediaRecorder.onstop = () => {
       stream.getTracks().forEach(t => t.stop());
-      const blob = new Blob(dayAudioChunks, {type:'audio/webm'});
+      if (!dayAudioChunks.length) {
+        if (status) status.textContent = '⚠️ No audio captured. Please try again.';
+        return;
+      }
+      const blob = new Blob(dayAudioChunks, {type: dayMediaRecorder.mimeType || 'audio/webm'});
       const url = URL.createObjectURL(blob);
       const audio = new Audio(url);
       audio.play();
-      const status = document.getElementById('dayRecStatus');
       if (status) status.textContent = '▶ Playing back your recording…';
     };
-    dayMediaRecorder.start();
-    const recBtn = document.getElementById('dayRecBtn');
-    const stopBtn = document.getElementById('dayStopBtn');
-    const status = document.getElementById('dayRecStatus');
+    dayMediaRecorder.start(100); // collect data every 100ms
     if (recBtn) recBtn.style.display = 'none';
     if (stopBtn) stopBtn.style.display = '';
-    if (status) status.textContent = '🔴 Recording… (click Stop & Play when done)';
-  }).catch(() => {
-    const status = document.getElementById('dayRecStatus');
-    if (status) status.textContent = '⚠️ Microphone access denied. Please allow microphone permissions.';
+    if (status) status.textContent = '🔴 Recording… click ⏹ Stop & Play when done';
+  }).catch(err => {
+    if (status) {
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        status.textContent = '⚠️ Microphone permission denied. Click the 🔒 icon in the address bar and allow microphone access, then try again.';
+      } else if (err.name === 'NotFoundError') {
+        status.textContent = '⚠️ No microphone found. Please connect a microphone and try again.';
+      } else {
+        status.textContent = '⚠️ Could not access microphone: ' + err.message;
+      }
+    }
   });
 }
 
@@ -1974,9 +1995,29 @@ function startDaySpeaking() {
       }
       if (transcriptEl) transcriptEl.innerHTML = (daySpeakTranscript + '<span style="color:var(--text2)">' + interim + '</span>') || '<em style="color:var(--text2)">Listening…</em>';
     };
-    daySpeechRec.start();
+    daySpeechRec.onerror = e => {
+      clearInterval(dayTimerInterval);
+      if (startBtn) startBtn.style.display = '';
+      if (stopBtn) stopBtn.style.display = 'none';
+      let msg = '⚠️ Microphone error: ' + e.error;
+      if (e.error === 'not-allowed') msg = '⚠️ Microphone permission denied. Click the 🔒 icon in the address bar, allow microphone, then try again.';
+      else if (e.error === 'no-speech') msg = '⚠️ No speech detected. Make sure your microphone is working and try again.';
+      else if (e.error === 'audio-capture') msg = '⚠️ No microphone found. Please connect a microphone.';
+      if (transcriptEl) transcriptEl.textContent = msg;
+    };
+    try {
+      daySpeechRec.start();
+    } catch(err) {
+      clearInterval(dayTimerInterval);
+      if (startBtn) startBtn.style.display = '';
+      if (stopBtn) stopBtn.style.display = 'none';
+      if (transcriptEl) transcriptEl.textContent = '⚠️ Could not start microphone: ' + err.message;
+    }
   } else {
-    if (transcriptEl) transcriptEl.textContent = '⚠️ Speech recognition not supported in this browser. Try Chrome.';
+    clearInterval(dayTimerInterval);
+    if (startBtn) startBtn.style.display = '';
+    if (stopBtn) stopBtn.style.display = 'none';
+    if (transcriptEl) transcriptEl.textContent = '⚠️ Speech recognition not supported. Please use Chrome or Edge browser.';
   }
 }
 
